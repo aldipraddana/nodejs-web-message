@@ -1,0 +1,15 @@
+{
+  "name": "inponowwebmessage",
+  "version": "1.0.0",
+  "description": "inponow web message belajar aldi",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aldi Pradana",
+  "license": "ISC",
+  "dependencies": {
+    "socket.io": "*",
+    "express": "*"
+  }
+}
