@@ -1,19 +1,61 @@
-let express = require('express')
-let app = express()
-let server = require('http').createServer(app)
-let io = require('socket.io').listen(server)
+let express = require('express');
+let app = express();
+let session = require('express-session');
+let server = require('http').createServer(app);
+let io = require('socket.io').listen(server);
+const mysql = require('mysql');
 
-// let fs = require('fs')
-// let path = require('path')
+app.use(express.static('public'));
+app.use(express.urlencoded({extended: false}));
+app.use(session({
+	secret: 'secret',
+	resave: true,
+	saveUninitialized: true
+}));
+
+const connection = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'chat'
+});
 
 yangterhubung = []
+
+app.set('views', './views');
+app.set('view engine', 'ejs');
 
 server.listen(3000);
 console.log('Server sedang Berjalan...')
 
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/index.html')
+  res.render('login');
 })
+
+app.get('/index', (req, res) => {
+  if (req.session.loggedin) {
+    res.render('index');
+  }else {
+    res.redirect('/');
+  }
+});
+
+app.post('/signin', (req, res) => {
+  connection.query(
+    'SELECT * FROM cn_user WHERE username = ? AND password = ?',
+    [req.body.username, req.body.password],
+    (error, results) => {
+      if (results.length > 0) {
+        req.session.loggedin = true;
+        req.session.username = req.body.username;
+        console.log(req.session);
+        res.redirect('/index');
+      }else {
+        res.redirect('/');
+      }
+    }
+  );
+});
 
 // app.use(express.static(path.join(__dirname, 'assets/bootstrap.min.css')))
 // app.use(express.static(path.join(__dirname, 'assets/bootstrap.min.js')))

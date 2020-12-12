@@ -9,7 +9,10 @@
   "author": "Aldi Pradana",
   "license": "ISC",
   "dependencies": {
-    "socket.io": "*",
-    "express": "*"
+    "ejs": "^3.1.5",
+    "express": "*",
+    "express-session": "^1.17.1",
+    "mysql": "^2.18.1",
+    "socket.io": "*"
   }
 }
