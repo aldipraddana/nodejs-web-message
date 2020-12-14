@@ -34,10 +34,14 @@ app.get('/', function (req, res) {
 
 app.get('/index', (req, res) => {
   if (req.session.loggedin) {
-    res.render('index');
+    res.render('index', {user_login: req.session});
   }else {
     res.redirect('/');
   }
+});
+
+app.get('/register', (req, res) => {
+    res.render('register');
 });
 
 app.post('/signin', (req, res) => {
@@ -47,14 +51,23 @@ app.post('/signin', (req, res) => {
     (error, results) => {
       if (results.length > 0) {
         req.session.loggedin = true;
-        req.session.username = req.body.username;
-        console.log(req.session);
+				req.session.username = req.body.username;
+				req.session.name = results[0].name;
         res.redirect('/index');
       }else {
         res.redirect('/');
       }
     }
   );
+});
+
+app.get('/logout', function(req, res){
+	req.session.destroy((err) => {
+			if(err) {
+					return console.log(err);
+			}
+			res.redirect('/');
+	});
 });
 
 // app.use(express.static(path.join(__dirname, 'assets/bootstrap.min.css')))
