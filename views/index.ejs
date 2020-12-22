@@ -58,7 +58,8 @@
 
         messageForm.submit(function(e) {
           e.preventDefault()
-          socket.emit('send message', message.val())
+          // socket.emit('send_message', message.val())
+          socket.emit('send_message', { id: <%= user_login.id_user %>, message: message.val()});
           message.val('')
         })
 
@@ -68,8 +69,16 @@
           // }else {
             chat.append('<div class="list-group-item">'+data.msg+'<div>')
           // }
+          console.log('ini di client');
           console.log(data);
         })
+
+        socket.on('notification', function(data) {
+          if (data.notification_alert != '') {
+            alert(`${data.notification_alert}`);
+          }
+        })
+
       })
     </script>
   </body>

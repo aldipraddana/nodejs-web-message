@@ -40,6 +40,21 @@ app.get('/index', (req, res) => {
   }
 });
 
+app.get('/list', (req, res) => {
+  if (req.session.loggedin) {
+		connection.query(
+			`SELECT * FROM cn_user WHERE id_user != ${req.session.id_user}`,
+			(error, results) => {
+				console.log(results);
+				res.render('list', {items: results, user_login: req.session});
+			}
+		);
+
+  }else {
+    res.redirect('/');
+  }
+});
+
 app.get('/register', (req, res) => {
     res.render('register');
 });
@@ -53,7 +68,8 @@ app.post('/signin', (req, res) => {
         req.session.loggedin = true;
 				req.session.username = req.body.username;
 				req.session.name = results[0].name;
-        res.redirect('/index');
+				req.session.id_user = results[0].id_user;
+        res.redirect('/list');
       }else {
         res.redirect('/');
       }
@@ -81,8 +97,23 @@ io.sockets.on('connection', function(socket) {
     yangterhubung.splice(yangterhubung.indexOf(socket), 1)
     console.log('Terputus: %s ', yangterhubung.length)
   })
+
+	//makeprivateroom
+	socket.on('myprivatechatroom',function(data){
+		socket.join(data.my_friend);
+		io.emit('notification',{notification_alert:"You have a message!"})
+	});
+
   // send message
-  socket.on('send message', function(data) {
-    io.sockets.emit('new message', {msg: data})
-  })
+  // socket.on('send_message', function(data) {
+  //   io.sockets.emit('new message', {msg: data})
+  // })
+	socket.on('send_message', function (data) {
+	    io.sockets.in(data.id).emit('new message', { msg: data.message });
+			// console.log('ini pesan');
+	    // console.log(data);
+	});
+
+
+
 })
