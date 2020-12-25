@@ -2,6 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inponow Web Message</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -9,19 +10,13 @@
     <!-- we can import the library with link on yout custom -->
     <link rel="stylesheet" href="assets/bootstrap.min.css">
     <script src="/socket.io/socket.io.js" charset="utf-8"></script>
-    <style media="screen">
-      .container_custom{
-        margin:auto;
-        width:60%
-      }
-    </style>
   </head>
   <body>
-    <div class="container_custom">
+    <div class="container">
       <br>
       <div class="row">
         <div class="col-md-8">
-          <h3>Inponow Web Message</h3>
+          <h3>Chat to <strong class="text-primary"><%= data_receiver.name %></strong></h3>
         </div>
         <div class="col-md-4">
           <a href="/logout" class="btn btn-success float-right">🏇 Logout</a>
@@ -44,6 +39,7 @@
                 <label style="color:transparent">Enter</label>
                 <button type="submit" style="width:100%" name="button" class="btn btn-success">📨 Send Message</button>
               </div>
+              <p><%= group.id_group_chat %></p>
             </div>
           </form>
         </div>
@@ -59,11 +55,11 @@
         messageForm.submit(function(e) {
           e.preventDefault()
           // socket.emit('send_message', message.val())
-          socket.emit('send_message', { id: <%= user_login.id_user %>, message: message.val()});
+          socket.emit('send_message', { id: <%= user_login.id_user %>, message: message.val(), group: '<%= group.id_group_chat %>'});
           message.val('')
         })
 
-        socket.on('new message', function(data) {
+        socket.on(`new_message_<%= group.id_group_chat %>`, function(data) {
           // if (chat.attr('check') == 1) {
             // chat.append('<div class="list-group-item bg-gray">'+data.msg+'<div>')
           // }else {

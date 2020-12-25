@@ -17,7 +17,8 @@ const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'chat'
+  database: 'chat',
+	multipleStatements: true
 });
 
 yangterhubung = []
@@ -32,9 +33,19 @@ app.get('/', function (req, res) {
   res.render('login');
 })
 
-app.get('/index', (req, res) => {
+app.get('/index/:id_receiver', (req, res) => {
   if (req.session.loggedin) {
-    res.render('index', {user_login: req.session});
+		connection.query(
+			`SELECT cf.id_group_chat FROM cn_user cu
+			 JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
+			 WHERE cu.id_user = ${req.session.id_user}
+       AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});SELECT name FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
+			(error, results) => {
+				// if (error) throw error;
+				console.log(results[1][0].name);
+				// console.log(results);
+				res.render('index', {user_login: req.session, data_receiver: results[1][0], group: results[0][0]});
+			});
   }else {
     res.redirect('/');
   }
@@ -45,7 +56,6 @@ app.get('/list', (req, res) => {
 		connection.query(
 			`SELECT * FROM cn_user WHERE id_user != ${req.session.id_user}`,
 			(error, results) => {
-				console.log(results);
 				res.render('list', {items: results, user_login: req.session});
 			}
 		);
@@ -100,6 +110,7 @@ io.sockets.on('connection', function(socket) {
 
 	//makeprivateroom
 	socket.on('myprivatechatroom',function(data){
+		console.log(data);
 		socket.join(data.my_friend);
 		io.emit('notification',{notification_alert:"You have a message!"})
 	});
@@ -108,10 +119,10 @@ io.sockets.on('connection', function(socket) {
   // socket.on('send_message', function(data) {
   //   io.sockets.emit('new message', {msg: data})
   // })
+
 	socket.on('send_message', function (data) {
-	    io.sockets.in(data.id).emit('new message', { msg: data.message });
-			// console.log('ini pesan');
-	    // console.log(data);
+		console.log(`new_message_${data.group}`);
+		io.sockets.emit(`new_message_${data.group}`, { msg: data.message });
 	});
 
 
