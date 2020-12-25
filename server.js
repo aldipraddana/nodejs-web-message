@@ -42,9 +42,11 @@ app.get('/index/:id_receiver', (req, res) => {
        AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});SELECT name FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
 			(error, results) => {
 				// if (error) throw error;
-				console.log(results[1][0].name);
-				// console.log(results);
-				res.render('index', {user_login: req.session, data_receiver: results[1][0], group: results[0][0]});
+				if (results[0][0] == undefined) {
+					res.redirect('/list');
+				}else {
+					res.render('index', {user_login: req.session, data_receiver: results[1][0], group: results[0][0]});
+				}
 			});
   }else {
     res.redirect('/');
@@ -111,18 +113,14 @@ io.sockets.on('connection', function(socket) {
 	//makeprivateroom
 	socket.on('myprivatechatroom',function(data){
 		console.log(data);
-		socket.join(data.my_friend);
+		// socket.join(data.my_friend);
 		io.emit('notification',{notification_alert:"You have a message!"})
 	});
 
   // send message
-  // socket.on('send_message', function(data) {
-  //   io.sockets.emit('new message', {msg: data})
-  // })
-
 	socket.on('send_message', function (data) {
-		console.log(`new_message_${data.group}`);
-		io.sockets.emit(`new_message_${data.group}`, { msg: data.message });
+		console.log('sender : ', `new_message_${data.username}`);
+		io.sockets.emit(`new_message_${data.group}`, { msg: data.message, sender: data.username });
 	});
 
 
