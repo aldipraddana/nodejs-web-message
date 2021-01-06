@@ -4,10 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Inponow Web Message</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-    <script src="http://code.jquery.com/jquery-3.3.1.min.js" charset="utf-8"></script>
-    <!-- we can import the library with link on yout custom -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <script src="/js/bootstrap.min.js" ></script>
+    <script src="/js/jquery.min.js" charset="utf-8"></script>
     <script src="/socket.io/socket.io.js" charset="utf-8"></script>
   </head>
   <body>
@@ -73,7 +72,7 @@
           if (data.sender == '<%= user_login.username %>') {
             chat.append(`<p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ ${time}</small></p></div><div class="alert alert-success text-right">${data.msg} <div>`)
           }else {
-            chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small>${data.sender} ~ ${time}</small></p></div><div class="alert alert-secondary text-left">${data.msg}<div>`)
+            chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${time}</small></p></div><div class="alert alert-secondary text-left">${data.msg}<div>`)
           }
 
           console.log('ini di client');
