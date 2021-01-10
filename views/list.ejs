@@ -3,48 +3,66 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inponow Web Message</title>
+    <title>Inponow Web Chat</title>
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.min.js" ></script>
     <script src="/js/jquery.min.js" charset="utf-8"></script>
     <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <style media="screen">
+      .shadow{
+        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20) !important;
+        border-radius: 7.2px;
+      }
+      .bg-blue{
+        background: #00A3FF !important;
+        color: white;
+        border-color: #00a3ff;
+      }
+      .bg-yellow{
+        color: #000;
+        border-color: transparent;
+        background: #ffb800 !important;
+      }
+    </style>
   </head>
   <body>
     <div class="container">
       <br>
-      <div class="row">
-        <div class="col-md-8">
-          <h3>Inponow Web Message</h3>
-        </div>
-        <div class="col-md-4">
-          <a href="/logout" class="btn btn-success float-right">🏇 Logout</a>
-        </div>
-        <div class="col-md-12 mt-3">
-          <div class="alert bg-dark text-white" role="alert">
-            <strong>Hello,</strong> <%= user_login.name %> 😀
+      <div class="">
+        <div class="row">
+          <div class="col-md-8">
+            <h3>Inponow Web Message</h3>
           </div>
-        </div>
+          <div class="col-md-4">
+            <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🏇 Logout</a>
+          </div>
+          <div class="col-md-12 mt-3">
+            <div class="alert bg-dark text-white shadow" role="alert">
+              <strong>Hello,</strong> <%= user_login.name %> 😀
+            </div>
+          </div>
 
-        <div class="col-md-12 mt-3">
-          <h5>Friend List</h5>
-          <table class="table mt-3" style="width: 100%;border-radius:5px;">
-            <thead class="bg-success text-white">
-              <tr>
-                <th style="width:7%;text-align:center">No</th>
-                <th>Name</th>
-                <th style="width:20%"> </th>
-              </tr>
-            </thead>
-            <tbody>
-              <% items.forEach((item, i) => { %>
-                <tr>
-                  <td style="text-align:center"><%= Number(i)+1 %></td>
-                  <td style="vertical-align:middle"><%= item.name %></td>
-                  <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn btn-sm btn-success">👈 Chat</button> </td>
+          <div class="col-md-12 mt-3">
+            <h5>Friend List</h5>
+            <table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
+              <thead class="">
+                <tr style="border-bottom:1px solid #e3e3e3">
+                  <th style="width:7%;text-align:center">No</th>
+                  <th>Name</th>
+                  <th style="width:20%"> </th>
                 </tr>
-              <% }) %>
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                <% items.forEach((item, i) => { %>
+                  <tr style="">
+                    <td style="text-align:center"><%= Number(i)+1 %></td>
+                    <td style="vertical-align:middle"><%= item.name %></td>
+                    <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👈 Chat</button> </td>
+                  </tr>
+                <% }) %>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
