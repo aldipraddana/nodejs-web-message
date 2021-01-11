@@ -34,16 +34,23 @@
             <h3>Inponow Web Message</h3>
           </div>
           <div class="col-md-4">
-            <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🏇 Logout</a>
+            <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
           </div>
           <div class="col-md-12 mt-3">
             <div class="alert bg-dark text-white shadow" role="alert">
               <strong>Hello,</strong> <%= user_login.name %> 😀
             </div>
           </div>
-
-          <div class="col-md-12 mt-3">
-            <h5>Friend List</h5>
+          <div class="col-md-12">
+            <br>
+          </div>
+          <div class="col-md-6">
+            <h5 class="pt-1">Friend List</h5>
+          </div>
+          <div class="col-md-6">
+            <button type="button" class="btn bg-yellow shadow float-right" name="button">🕺🏽 Tambahkan Teman</button>
+          </div>
+          <div class="col-md-12">
             <table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
               <thead class="">
                 <tr style="border-bottom:1px solid #e3e3e3">
@@ -57,7 +64,7 @@
                   <tr style="">
                     <td style="text-align:center"><%= Number(i)+1 %></td>
                     <td style="vertical-align:middle"><%= item.name %></td>
-                    <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👈 Chat</button> </td>
+                    <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</button> </td>
                   </tr>
                 <% }) %>
               </tbody>

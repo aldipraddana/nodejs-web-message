@@ -140,7 +140,7 @@ a {
     </style>
   </head>
   <body>
-    <div class="row">
+    <div class="row login__">
       <div class="col-md"></div>
       <div class="col-md-6" style="top:7em">
         <div class="px-1 px-md-5 mx-auto">
@@ -166,7 +166,7 @@ a {
                             <div class="custom-control custom-checkbox custom-control-inline"> <input id="chk1" type="checkbox" name="chk" class="custom-control-input"> <label for="chk1" class="custom-control-label text-sm">Remember me</label> </div> <a href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
                           </div>
                           <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Login</button> </div>
-                          <div class="row px-3"> <small class="font-weight-bold">Don't have an account? <a class="" style="color:#FFB800">Register</a></small> </div>
+                          <div class="row px-3"> <small class="font-weight-bold">Have an account? <a class="register" style="color:#FFB800">Register</a></small> </div>
                         </form>
                     </div>
                 </div>
@@ -177,5 +177,54 @@ a {
       <div class="col-md"></div>
     </div>
 
+    <div class="row register__" style="display:none">
+      <div class="col-md"></div>
+      <div class="col-md-8" style="top:7em">
+        <div class="px-1 px-md-5 mx-auto">
+        <div class="card card0 border-0">
+            <div class="row d-flex">
+                <div class="col-lg-12">
+                    <div class="card2 border-0 card px-4 py-5">
+                        <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
+                        <form action="/signup" method="post">
+                          <div class="row">
+                            <div class="col-md">
+                              <label class="mb-1">
+                               <h6 class="mb-0 text-sm">Username</h6>
+                              </label>
+                              <input class="mb-4" type="text" name="username" placeholder="Enter a valid username">
+                            </div>
+                            <div class="col-md">
+                              <div class=""> <label class="mb-1">
+                                <h6 class="mb-0 text-sm">Email</h6>
+                                </label> <input class="mb-4" type="email" name="username" placeholder="Enter a valid emial"> </div>
+                            </div>
+                          </div>
+                          <div class="row px-3"> <label class="mb-1">
+                            <h6 class="mb-0 text-sm">Password</h6>
+                          </label> <input type="password" class="mb-4" name="password" placeholder="Enter password"> </div>
+                          <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
+                          <div class="row px-3"> <small class="font-weight-bold">Don't have an account? <a class="login" style="color:#FFB800">Login</a></small> </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+      </div>
+      <div class="col-md"></div>
+    </div>
+    </div>
+
+    <script type="text/javascript">
+      $('.login').on('click', function () {
+        $('.login__').show();
+        $('.register__').hide();
+      })
+      $('.register').on('click', function () {
+        $('.register__').show();
+        $('.login__').hide();
+      })
+    </script>
   </body>
 </html>
