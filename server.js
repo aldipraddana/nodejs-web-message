@@ -7,6 +7,7 @@ let io = require('socket.io').listen(server);
 let flash = require('connect-flash');
 const mysql = require('mysql');
 const path = require('path');
+const jquery = require('jquery');
 
 // prepare server
 // app.use('/api', api); // redirect API calls
@@ -43,7 +44,15 @@ server.listen(3000);
 console.log('Server sedang Berjalan...')
 
 app.get('/', function(req, res) {
-  res.render('login', {flash_login: req.flash('login')});
+	let flash_data = req.flash('login');
+	let flash_ = '';
+	if (flash_data != '') {
+		flash_ = flash_data[0];
+	}else {
+		flash_ = 'Succ';
+	}
+	console.log(flash_);
+	res.render('login', {flash_login: flash_data, type: flash_.substr(0, 4) == 'Succ' ? 'signup' : 'signin'});
 })
 
 app.get('/index/:id_receiver', (req, res) => {
@@ -88,16 +97,25 @@ app.get('/list', (req, res) => {
   }
 });
 
-app.get('/signup', (req, res) => {
+app.post('/signup', (req, res) => {
 	connection.query(
-		'INSERT INTO cn_user (username, email, password) VALUES (?, ?, ?)',
+		'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
 		[req.body.username, req.body.email, req.body.password],
 		(error, results) => {
-
+			req.flash('login', 'Successfully added account');
+			res.redirect('/');
 		}
 	)
 });
-
+app.post('/create', (req, res) => {
+  connection.query(
+    'INSERT INTO items (name) VALUES (?)',
+    [req.body.itemName],
+    (error, results) => {
+      res.redirect('/index');
+    }
+  );
+});
 app.post('/signin', (req, res) => {
   connection.query(
     'SELECT * FROM cn_user WHERE username = ? AND password = ?',

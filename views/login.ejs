@@ -157,8 +157,15 @@
             <div class="col-lg-12">
               <div class="card2 border-0 card px-4 py-5">
                 <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
-                <% if(flash_login != ''){ %>
+                <% if(flash_login != '' && type == 'signin'){ %>
                   <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
+                    <strong><%= flash_login %></strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <% }else if(flash_login != '' && type == 'signup') { %>
+                  <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
                     <strong><%= flash_login %></strong>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
