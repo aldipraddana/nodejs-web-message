@@ -97,16 +97,18 @@ app.get('/list', (req, res) => {
   }
 });
 
+
 app.post('/signup', (req, res) => {
 	connection.query(
 		'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
-		[req.body.username, req.body.email, req.body.password],
+		[req.body.username, req.body.name, req.body.password],
 		(error, results) => {
-			req.flash('login', 'Successfully added account');
+			req.flash('login', 'Successfully added account, please login...');
 			res.redirect('/');
 		}
 	)
 });
+
 app.post('/create', (req, res) => {
   connection.query(
     'INSERT INTO items (name) VALUES (?)',

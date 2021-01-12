@@ -159,14 +159,14 @@
                 <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
                 <% if(flash_login != '' && type == 'signin'){ %>
                   <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
-                    <strong><%= flash_login %></strong>
+                    <strong style="font-size:13px"><%= flash_login %></strong>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
                   </div>
                 <% }else if(flash_login != '' && type == 'signup') { %>
                   <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
-                    <strong><%= flash_login %></strong>
+                    <strong style="font-size:13px"><%= flash_login %></strong>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -214,8 +214,8 @@
                     </div>
                     <div class="col-md">
                       <div class=""> <label class="mb-1">
-                          <h6 class="mb-0 text-sm">Email</h6>
-                        </label> <input class="mb-4" type="email" name="email" placeholder="Enter a valid Email"> </div>
+                          <h6 class="mb-0 text-sm">Your Fullname</h6>
+                        </label> <input class="mb-4" type="text" name="name"  style="text-transform:capitalize;" placeholder="Enter a valid Email"> </div>
                     </div>
                   </div>
                   <div class="row px-3"> <label class="mb-1">
@@ -246,7 +246,7 @@
     $(document).ready(function() {
       setTimeout(function () {
         $('.alert__').fadeOut();
-      }, 2000);
+      }, 3000);
     })
   </script>
 </body>
