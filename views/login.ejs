@@ -1,230 +1,247 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inponow Web Message</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/bootstrap.min.js" ></script>
-    <script src="/js/jquery.min.js" charset="utf-8"></script>
-    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
-    <style media="screen">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inponow Web Message</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="/js/jquery.min.js" charset="utf-8"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+  <style media="screen">
     body {
-  color: #000;
-  overflow-x: hidden;
-  height: 100%;
-  background-color: #f5f5f5;
-  background-repeat: no-repeat
-}
+      color: #000;
+      overflow-x: hidden;
+      height: 100%;
+      background-color: #f5f5f5;
+      background-repeat: no-repeat
+    }
 
-.card0 {
-  box-shadow: 2px 2px 16px 2px #d8d8d8;
-  border-radius: 9px;
-}
+    .card0 {
+      box-shadow: 2px 2px 16px 2px #d8d8d8;
+      border-radius: 9px;
+    }
 
-.card2 {
-  margin: 0px 40px
-}
+    .card2 {
+      margin: 0px 40px
+    }
 
-.logo {
-  width: 250px;
-  margin-top: 20px;
-  margin-left: 35px;
-  /* padding: 30px 0 */
-}
+    .logo {
+      width: 250px;
+      margin-top: 20px;
+      margin-left: 35px;
+      /* padding: 30px 0 */
+    }
 
-.image {
-  width: 360px;
-  height: 280px
-}
+    .image {
+      width: 360px;
+      height: 280px
+    }
 
-.border-line {
-  border-right: 1px solid #EEEEEE
-}
+    .border-line {
+      border-right: 1px solid #EEEEEE
+    }
 
-.text-sm {
-  font-size: 14px !important
-}
+    .text-sm {
+      font-size: 14px !important
+    }
 
-::placeholder {
-  color: #BDBDBD;
-  opacity: 1;
-  font-weight: 300
-}
+    ::placeholder {
+      color: #BDBDBD;
+      opacity: 1;
+      font-weight: 300
+    }
 
-:-ms-input-placeholder {
-  color: #BDBDBD;
-  font-weight: 300
-}
+    :-ms-input-placeholder {
+      color: #BDBDBD;
+      font-weight: 300
+    }
 
-::-ms-input-placeholder {
-  color: #BDBDBD;
-  font-weight: 300
-}
+    ::-ms-input-placeholder {
+      color: #BDBDBD;
+      font-weight: 300
+    }
 
-input,
-textarea {
-  padding: 10px 12px 10px 12px;
-  border: 1px solid lightgrey;
-  border-radius: 2px;
-  margin-bottom: 5px;
-  margin-top: 2px;
-  width: 100%;
-  box-sizing: border-box;
-  color: #2C3E50;
-  font-size: 14px;
-  letter-spacing: 1px
-}
+    input,
+    textarea {
+      padding: 10px 12px 10px 12px;
+      border: 1px solid lightgrey;
+      border-radius: 2px;
+      margin-bottom: 5px;
+      margin-top: 2px;
+      width: 100%;
+      box-sizing: border-box;
+      color: #2C3E50;
+      font-size: 14px;
+      letter-spacing: 1px
+    }
 
-input:focus,
-textarea:focus {
-  -moz-box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  box-shadow: none !important;
-  border: 1px solid #304FFE;
-  outline-width: 0
-}
+    input:focus,
+    textarea:focus {
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      border: 1px solid #304FFE;
+      outline-width: 0
+    }
 
-button:focus {
-  -moz-box-shadow: none !important;
-  -webkit-box-shadow: none !important;
-  box-shadow: none !important;
-  outline-width: 0
-}
+    button:focus {
+      -moz-box-shadow: none !important;
+      -webkit-box-shadow: none !important;
+      box-shadow: none !important;
+      outline-width: 0
+    }
 
-a {
-  color: inherit;
-  cursor: pointer
-}
+    a {
+      color: inherit;
+      cursor: pointer
+    }
 
-.btn-blue {
-  width: 150px;
-  border-radius: 2px;
-  background: #00A3FF !important;
-  color: white;
-  border-color: #00a3ff;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20) !important;
-  border-radius: 7.2px;
-}
+    .btn-blue {
+      width: 150px;
+      border-radius: 2px;
+      background: #00A3FF !important;
+      color: white;
+      border-color: #00a3ff;
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20) !important;
+      border-radius: 7.2px;
+    }
 
-.btn-blue:hover {
-  background-color: #000;
-  color: white;
-  cursor: pointer
-}
+    .btn-blue:hover {
+      background-color: #000;
+      color: white;
+      cursor: pointer
+    }
 
-.bg-blue {
-  color: #fff;
-  background-color: #00A3FF
-}
+    .bg-blue {
+      color: #fff;
+      background-color: #00A3FF
+    }
 
-@media screen and (max-width: 991px) {
-  .logo {
-      margin-left: 0px
-  }
+    @media screen and (max-width: 991px) {
+      .logo {
+        margin-left: 0px
+      }
 
-  .image {
-      width: 300px;
-      height: 220px
-  }
+      .image {
+        width: 300px;
+        height: 220px
+      }
 
-  .border-line {
-      border-right: none
-  }
+      .border-line {
+        border-right: none
+      }
 
-  .card2 {
-      border-top: 1px solid #EEEEEE !important;
-      margin: 0px 15px
-  }
-}
-    </style>
-  </head>
-  <body>
-    <div class="row login__">
-      <div class="col-md"></div>
-      <div class="col-md-6" style="top:7em">
-        <div class="px-1 px-md-5 mx-auto">
+      .card2 {
+        border-top: 1px solid #EEEEEE !important;
+        margin: 0px 15px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="row login__">
+    <div class="col-md"></div>
+    <div class="col-md-6" style="top:7em">
+      <div class="px-1 px-md-5 mx-auto">
         <div class="card card0 border-0">
-            <div class="row d-flex">
-                <!-- <div class="col-lg-6">
+          <div class="row d-flex">
+            <!-- <div class="col-lg-6">
                     <div class="card1 pb-5">
                         <div class="row"> <img src="" class="logo px-5 py-4"> </div>
                         <div class="row px-3 justify-content-center mt-4 mb-5 border-line"> <img src="/custom/chat.svg" class="image"> </div>
                     </div>
                 </div> -->
-                <div class="col-lg-12">
-                    <div class="card2 border-0 card px-4 py-5">
-                        <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
-                        <form action="/signin" method="post">
-                          <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Username</h6>
-                            </label> <input class="mb-4" type="text" name="username" placeholder="Enter a valid username"> </div>
-                          <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Password</h6>
-                            </label> <input type="password" name="password" placeholder="Enter password"> </div>
-                          <div class="row px-3 mb-4">
-                            <div class="custom-control custom-checkbox custom-control-inline"> <input id="chk1" type="checkbox" name="chk" class="custom-control-input"> <label for="chk1" class="custom-control-label text-sm">Remember me</label> </div> <a href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
-                          </div>
-                          <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Login</button> </div>
-                          <div class="row px-3"> <small class="font-weight-bold">Have an account? <a class="register" style="color:#FFB800">Register</a></small> </div>
-                        </form>
-                    </div>
-                </div>
+            <div class="col-lg-12">
+              <div class="card2 border-0 card px-4 py-5">
+                <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
+                <% if(flash_login != ''){ %>
+                  <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
+                    <strong><%= flash_login %></strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <% } %>
+                <form action="/signin" method="post">
+                  <div class="row px-3"> <label class="mb-1">
+                      <h6 class="mb-0 text-sm">Username</h6>
+                    </label> <input class="mb-4" type="text" name="username" placeholder="Enter a valid username"> </div>
+                  <div class="row px-3"> <label class="mb-1">
+                      <h6 class="mb-0 text-sm">Password</h6>
+                    </label> <input type="password" name="password" placeholder="Enter password"> </div>
+                  <div class="row px-3 mb-4">
+                    <div class="custom-control custom-checkbox custom-control-inline"> <input id="chk1" type="checkbox" name="chk" class="custom-control-input"> <label for="chk1" class="custom-control-label text-sm">Remember me</label> </div> <a
+                      href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
+                  </div>
+                  <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Login</button> </div>
+                  <div class="row px-3"> <small class="font-weight-bold">Have an account? <a class="register" style="color:#FFB800">Register</a></small> </div>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
       </div>
-      <div class="col-md"></div>
     </div>
+    <div class="col-md"></div>
+  </div>
 
-    <div class="row register__" style="display:none">
-      <div class="col-md"></div>
-      <div class="col-md-8" style="top:7em">
-        <div class="px-1 px-md-5 mx-auto">
+  <div class="row register__" style="display:none">
+    <div class="col-md"></div>
+    <div class="col-md-8" style="top:7em">
+      <div class="px-1 px-md-5 mx-auto">
         <div class="card card0 border-0">
-            <div class="row d-flex">
-                <div class="col-lg-12">
-                    <div class="card2 border-0 card px-4 py-5">
-                        <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
-                        <form action="/signup" method="post">
-                          <div class="row">
-                            <div class="col-md">
-                              <label class="mb-1">
-                               <h6 class="mb-0 text-sm">Username</h6>
-                              </label>
-                              <input class="mb-4" type="text" name="username" placeholder="Enter a valid username">
-                            </div>
-                            <div class="col-md">
-                              <div class=""> <label class="mb-1">
-                                <h6 class="mb-0 text-sm">Email</h6>
-                                </label> <input class="mb-4" type="email" name="username" placeholder="Enter a valid emial"> </div>
-                            </div>
-                          </div>
-                          <div class="row px-3"> <label class="mb-1">
-                            <h6 class="mb-0 text-sm">Password</h6>
-                          </label> <input type="password" class="mb-4" name="password" placeholder="Enter password"> </div>
-                          <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
-                          <div class="row px-3"> <small class="font-weight-bold">Don't have an account? <a class="login" style="color:#FFB800">Login</a></small> </div>
-                        </form>
+          <div class="row d-flex">
+            <div class="col-lg-12">
+              <div class="card2 border-0 card px-4 py-5">
+                <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
+                <form action="/signup" method="post">
+                  <div class="row">
+                    <div class="col-md">
+                      <label class="mb-1">
+                        <h6 class="mb-0 text-sm">Username</h6>
+                      </label>
+                      <input class="mb-4" type="text" name="username" placeholder="Enter a valid username">
                     </div>
-                </div>
+                    <div class="col-md">
+                      <div class=""> <label class="mb-1">
+                          <h6 class="mb-0 text-sm">Email</h6>
+                        </label> <input class="mb-4" type="email" name="email" placeholder="Enter a valid Email"> </div>
+                    </div>
+                  </div>
+                  <div class="row px-3"> <label class="mb-1">
+                      <h6 class="mb-0 text-sm">Password</h6>
+                    </label> <input type="password" class="mb-4" name="password" placeholder="Enter password"> </div>
+                  <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
+                  <div class="row px-3"> <small class="font-weight-bold">Don't have an account? <a class="login" style="color:#FFB800">Login</a></small> </div>
+                </form>
+              </div>
             </div>
+          </div>
         </div>
-    </div>
       </div>
-      <div class="col-md"></div>
     </div>
-    </div>
+    <div class="col-md"></div>
+  </div>
+  </div>
 
-    <script type="text/javascript">
-      $('.login').on('click', function () {
-        $('.login__').show();
-        $('.register__').hide();
-      })
-      $('.register').on('click', function () {
-        $('.register__').show();
-        $('.login__').hide();
-      })
-    </script>
-  </body>
+  <script type="text/javascript">
+    $('.login').on('click', function() {
+      $('.login__').show();
+      $('.register__').hide();
+    })
+    $('.register').on('click', function() {
+      $('.register__').show();
+      $('.login__').hide();
+    })
+    $(document).ready(function() {
+      setTimeout(function () {
+        $('.alert__').fadeOut();
+      }, 2000);
+    })
+  </script>
+</body>
+
 </html>

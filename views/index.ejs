@@ -1,108 +1,116 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Inponow Web Message</title>
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <script src="/js/bootstrap.min.js" ></script>
-    <script src="/js/jquery.min.js" charset="utf-8"></script>
-    <script src="/socket.io/socket.io.js" charset="utf-8"></script>
-    <style media="screen">
-      .shadow{
-        box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14), 0 3px 1px -2px rgba(0,0,0,0.12), 0 1px 5px 0 rgba(0,0,0,0.20) !important;
-        border-radius: 7.2px;
-      }
-      .bg-blue{
-        background: #00A3FF !important;
-        color: white;
-        border-color: #00a3ff;
-      }
-      .bg-yellow{
-        color: #000;
-        border-color: transparent;
-        background: #ffb800 !important;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <br>
-      <div class="row">
-        <div class="col-md-8">
-          <h3>Hello <strong style="color:#00A3FF"><%= user_login.name %> 😀</strong></h3>
-        </div>
-        <div class="col-md-4">
-          <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
-          <a href="/list" class="btn btn-success float-right mr-3 bg-blue shadow">🐋 Back</a>
-        </div>
-        <div class="col-md-12 mt-3">
-          <div class="alert bg-dark text-white shadow" role="alert">
-            Chat to, <strong> <%= data_receiver.name %></strong>
-          </div>
-        </div>
-        <div class="col-md-12 mt-3">
-          <div id="chat" check="1__">
-          </div>
-          <form id="messageForm" class="mt-3">
-            <div class="form-group row">
-              <div class="col-md-9">
-                <label>Enter Message</label>
-                <input type="text" class="form-control" id="message" name="" value="">
-              </div>
-              <div class="col-md-3">
-                <label style="color:transparent">Enter</label>
-                <button type="submit" style="width:100%" name="button" class="btn bg-blue shadow">📨 Send Message</button>
-              </div>
-            </div>
-          </form>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inponow Web Message</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <script src="/js/jquery.min.js" charset="utf-8"></script>
+  <script src="/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+  <style media="screen">
+    .shadow {
+      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20) !important;
+      border-radius: 7.2px;
+    }
+
+    .bg-blue {
+      background: #00A3FF !important;
+      color: white;
+      border-color: #00a3ff;
+    }
+
+    .bg-yellow {
+      color: #000;
+      border-color: transparent;
+      background: #ffb800 !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <br>
+    <div class="row">
+      <div class="col-md-8">
+        <h3>Hello <strong style="color:#00A3FF"><%= user_login.name %> 😀</strong></h3>
+      </div>
+      <div class="col-md-4">
+        <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
+        <a href="/list" class="btn btn-success float-right mr-3 bg-blue shadow">🐋 Back</a>
+      </div>
+      <div class="col-md-12 mt-3">
+        <div class="alert bg-dark text-white shadow" role="alert">
+          Chat to, <strong> <%= data_receiver.name %></strong>
         </div>
       </div>
+      <div class="col-md-12 mt-3">
+        <div id="chat" check="1__">
+        </div>
+        <form id="messageForm" class="mt-3">
+          <div class="form-group row">
+            <div class="col-md-9">
+              <label>Enter Message</label>
+              <input type="text" class="form-control" id="message" name="" value="">
+            </div>
+            <div class="col-md-3">
+              <label style="color:transparent">Enter</label>
+              <button type="submit" style="width:100%" name="button" class="btn bg-blue shadow">📨 Send Message</button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <script type="text/javascript">
+  </div>
+  <script type="text/javascript">
+    function pad(val) {
+      var str = "" + val;
+      var pad = "00";
+      var ans = pad.substring(0, pad.length - str.length) + str;
+      return ans;
+    }
 
-      function pad(val) {
-        var str = "" + val;
-        var pad = "00";
-        var ans = pad.substring(0, pad.length - str.length) + str;
-        return ans;
-      }
+    $(function() {
+      let socket = io.connect()
+      let chat = $('#chat')
+      let messageForm = $('#messageForm')
+      let message = $('#message')
 
-      $(function(){
-        let socket = io.connect()
-        let chat = $('#chat')
-        let messageForm = $('#messageForm')
-        let message = $('#message')
-
-        messageForm.submit(function(e) {
-          e.preventDefault()
-          // socket.emit('send_message', message.val())
-          socket.emit('send_message', { username: '<%= user_login.username %>', message: message.val(), group: '<%= group.id_group_chat %>'});
-          message.val('')
-        })
-
-        socket.on(`new_message_<%= group.id_group_chat %>`, function(data) {
-          //set time now
-          let dt = new Date();
-          let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes());
-          if (data.sender == '<%= user_login.username %>') {
-            chat.append(`<p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ ${time}</small></p></div><div class="alert alert-success text-right">${data.msg} <div>`)
-          }else {
-            chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${time}</small></p></div><div class="alert alert-secondary text-left">${data.msg}<div>`)
-          }
-
-          console.log('ini di client');
-          console.log(data);
-        })
-
-        socket.on('notification', function(data) {
-          if (data.notification_alert != '') {
-            alert(`${data.notification_alert}`);
-          }
-        })
-
+      messageForm.submit(function(e) {
+        e.preventDefault()
+        // socket.emit('send_message', message.val())
+        socket.emit('send_message', {
+          username: '<%= user_login.username %>',
+          message: message.val(),
+          group: '<%= group.id_group_chat %>'
+        });
+        message.val('')
       })
-      // aldi ajibb
-    </script>
-  </body>
+
+      socket.on(`new_message_<%= group.id_group_chat %>`, function(data) {
+        //set time now
+        let dt = new Date();
+        let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes());
+        if (data.sender == '<%= user_login.username %>') {
+          chat.append(`<p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ ${time}</small></p></div><div class="alert alert-success text-right">${data.msg} <div>`)
+        } else {
+          chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${time}</small></p></div><div class="alert alert-secondary text-left">${data.msg}<div>`)
+        }
+
+        console.log('ini di client');
+        console.log(data);
+      })
+
+      socket.on('notification', function(data) {
+        if (data.notification_alert != '') {
+          alert(`${data.notification_alert}`);
+        }
+      })
+
+    })
+    // aldi ajibb
+  </script>
+</body>
+
 </html>
