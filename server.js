@@ -82,7 +82,7 @@ app.get('/index/:id_receiver', (req, res) => {
 app.get('/list', (req, res) => {
   if (req.session.loggedin) {
     connection.query(
-      `SELECT * FROM cn_user WHERE id_user != ${req.session.id_user}`,
+      `SELECT cu.* FROM cn_friend cf, cn_user cu WHERE cf.id_user = ${req.session.id_user} and cf.id_friend = cu.id_user`,
       (error, results) => {
         res.render('list', {
           items: results,
@@ -137,6 +137,24 @@ app.post('/signin', (req, res) => {
       }
     }
   );
+});
+
+app.post('/find', (req, res) => {
+	connection.query(
+		`SELECT * FROM cn_user WHERE username LIKE '%${req.body.username}%'`,
+		(error, results) => {
+      let hasil;
+      if (results.length > 0) {
+        hasil = results;
+      }else {
+        hasil = 0;
+      }
+      res.render('result', {
+        user_login: req.session,
+        items: hasil,
+      });
+		}
+	)
 });
 
 app.get('/logout', function(req, res) {

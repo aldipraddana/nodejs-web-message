@@ -1,0 +1,22 @@
+  <% if(items != 0) {%>
+<table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
+  <thead class="">
+    <tr style="border-bottom:1px solid #e3e3e3">
+      <th style="width:7%;text-align:center">No</th>
+      <th style="width:25%">Username</th>
+      <th style="width:38%">Name</th>
+      <th style="width:30%"> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <% items.forEach((item, i) => { %>
+    <tr style="">
+      <td style="text-align:center;vertical-align:middle"><%= Number(i)+1 %></td>
+      <td style="vertical-align:middle"><%= item.username %></td>
+      <td style="vertical-align:middle"><%= item.name %></td>
+      <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">🕺🏽 Add Friend</button> </td>
+    </tr>
+    <% }) %>
+  </tbody>
+</table>
+  <% } %>
