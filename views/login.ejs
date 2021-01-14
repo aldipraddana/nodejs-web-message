@@ -158,19 +158,19 @@
               <div class="card2 border-0 card px-4 py-5">
                 <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
                 <% if(flash_login != '' && type == 'signin'){ %>
-                  <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
-                    <strong style="font-size:13px"><%= flash_login %></strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
+                <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
+                  <strong style="font-size:13px"><%= flash_login %></strong>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
                 <% }else if(flash_login != '' && type == 'signup') { %>
-                  <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
-                    <strong style="font-size:13px"><%= flash_login %></strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
+                <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
+                  <strong style="font-size:13px"><%= flash_login %></strong>
+                  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
                 <% } %>
                 <form action="/signin" method="post">
                   <div class="row px-3"> <label class="mb-1">
@@ -244,7 +244,7 @@
       $('.login__').hide();
     })
     $(document).ready(function() {
-      setTimeout(function () {
+      setTimeout(function() {
         $('.alert__').fadeOut();
       }, 3000);
     })

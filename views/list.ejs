@@ -37,86 +37,86 @@
         <div class="col-md-8">
           <h3>Inponow Web Message</h3>
         </div>
-          <div class="col-md-4">
-            <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
-          </div>
-          <div class="col-md-12 mt-3">
-            <% if(flash == 1){ %>
-              <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
-  						  <strong style="font-size:13px">Login Berhasil !</strong>
-  						  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-  						    <span aria-hidden="true">&times;</span>
-  						  </button>
-  						</div>
-            <% } %>
-            <div class="alert bg-dark text-white shadow" role="alert">
-              <strong>Hello,</strong> <%= user_login.name %> 😀
-            </div>
-          </div>
+        <div class="col-md-4">
+          <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
         </div>
-        <div class="row list__">
-          <div class="col-md-12">
-            <br>
+        <div class="col-md-12 mt-3">
+          <% if(flash == 1){ %>
+          <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
+            <strong style="font-size:13px">Login Berhasil !</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-          <div class="col-md-6">
-            <h5 class="pt-1">Friend List</h5>
-          </div>
-          <div class="col-md-6">
-            <button type="button" class="btn bg-yellow shadow float-right" name="button_add_friend">🕺🏽  Add Friend</button>
-          </div>
-          <div class="col-md-12">
-            <table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
-              <thead class="">
-                <tr style="border-bottom:1px solid #e3e3e3">
-                  <th style="width:7%;text-align:center">No</th>
-                  <th>Name</th>
-                  <th style="width:20%"> </th>
-                </tr>
-              </thead>
-              <tbody>
-                <% items.forEach((item, i) => { %>
-                <tr style="">
-                  <td style="text-align:center"><%= Number(i)+1 %></td>
-                  <td style="vertical-align:middle"><%= item.name %></td>
-                  <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</button> </td>
-                </tr>
-                <% }) %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class=" row add__ mt-4" style="display:none">
-          <div class="col-md-6">
-            <h5 class="pt-1">Find Friend</h5>
-          </div>
-          <div class="col-md-6">
-            <button type="button" class="btn bg-yellow shadow float-right" name="button_back">🏄🏽 Back</button>
-          </div>
-          <div class="col-md-10 mt-3">
-            <input type="text" id="username__" class="form-control" placeholder="Search By Username..." value="" style="border-color: transparent;width:100%;border-radius: 7.5px;box-shadow: 0 1px 1px 0 rgba(213, 213, 213, 0.68)">
-          </div>
-          <div class="col-md-2">
-            <button type="button" style="width:100%" class="btn bg-yellow shadow mt-3 find__" name="button">Find</button>
-          </div>
-          <div class="col-md-12 find_area__">
-
+          <% } %>
+          <div class="alert bg-dark text-white shadow" role="alert">
+            <strong>Hello,</strong> <%= user_login.name %> 😀
           </div>
         </div>
       </div>
+      <div class="row list__">
+        <div class="col-md-12">
+          <br>
+        </div>
+        <div class="col-md-6">
+          <h5 class="pt-1">Friend List</h5>
+        </div>
+        <div class="col-md-6">
+          <button type="button" class="btn bg-yellow shadow float-right" name="button_add_friend">🕺🏽 Add Friend</button>
+        </div>
+        <div class="col-md-12">
+          <table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
+            <thead class="">
+              <tr style="border-bottom:1px solid #e3e3e3">
+                <th style="width:7%;text-align:center">No</th>
+                <th>Name</th>
+                <th style="width:20%"> </th>
+              </tr>
+            </thead>
+            <tbody>
+              <% items.forEach((item, i) => { %>
+              <tr style="">
+                <td style="text-align:center"><%= Number(i)+1 %></td>
+                <td style="vertical-align:middle"><%= item.name %></td>
+                <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</button> </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class=" row add__ mt-4" style="display:none">
+        <div class="col-md-6">
+          <h5 class="pt-1">Find Friend</h5>
+        </div>
+        <div class="col-md-6">
+          <button type="button" class="btn bg-yellow shadow float-right" name="button_back">🏄🏽 Back</button>
+        </div>
+        <div class="col-md-10 mt-3">
+          <input type="text" id="username__" class="form-control" placeholder="Search By Username..." value="" style="border-color: transparent;width:100%;border-radius: 7.5px;box-shadow: 0 1px 1px 0 rgba(213, 213, 213, 0.68)">
+        </div>
+        <div class="col-md-2">
+          <button type="button" style="width:100%" class="btn bg-yellow shadow mt-3 find__" name="button">Find</button>
+        </div>
+        <div class="col-md-12 find_area__">
+
+        </div>
+      </div>
     </div>
+  </div>
   <script type="text/javascript">
     $(document).ready(function() {
-      setTimeout(function () {
+      setTimeout(function() {
         $('.alert__').fadeOut();
       }, 2000);
     });
 
-    $('button[name="button_add_friend"]').on('click', function () {
+    $('button[name="button_add_friend"]').on('click', function() {
       $('.add__').show();
       $('.list__').hide();
     });
 
-    $('button[name="button_back"]').on('click', function () {
+    $('button[name="button_back"]').on('click', function() {
       $('.add__').hide();
       $('.list__').show();
     });
@@ -136,12 +136,12 @@
         success: function(result) {
           if (result != 0) {
             $('.find_area__').html(result);
-          }else {
+          } else {
             $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
-         console.error();
+          console.error();
         }
       })
     })
