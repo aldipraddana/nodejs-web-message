@@ -44,18 +44,15 @@ server.listen(3000);
 console.log('Server sedang Berjalan...')
 
 app.get('/', function(req, res) {
-  let flash_data = req.flash('login');
-  let flash_ = '';
-  if (flash_data != '') {
-    flash_ = flash_data[0];
-  } else {
-    flash_ = 'Succ';
-  }
-  console.log(flash_);
-  res.render('login', {
-    flash_login: flash_data,
-    type: flash_.substr(0, 4) == 'Succ' ? 'signup' : 'signin'
-  });
+	let flash_data = req.flash('login');
+	let flash_ = '';
+	if (flash_data != '') {
+		flash_ = flash_data[0];
+	}else {
+		flash_ = 'Succ';
+	}
+	console.log(flash_);
+	res.render('login', {flash_login: flash_data, type: flash_.substr(0, 4) == 'Succ' ? 'signup' : 'signin'});
 })
 
 app.get('/index/:id_receiver', (req, res) => {
@@ -90,7 +87,7 @@ app.get('/list', (req, res) => {
         res.render('list', {
           items: results,
           user_login: req.session,
-          flash: req.flash('login')
+					flash: req.flash('login')
         });
       }
     );
@@ -102,25 +99,16 @@ app.get('/list', (req, res) => {
 
 
 app.post('/signup', (req, res) => {
-  connection.query(
-    'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
-    [req.body.username, req.body.name, req.body.password],
-    (error, results) => {
-      req.flash('login', 'Successfully added account, please login...');
-      res.redirect('/');
-    }
-  )
+	connection.query(
+		'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
+		[req.body.username, req.body.name, req.body.password],
+		(error, results) => {
+			req.flash('login', 'Successfully added account, please login...');
+			res.redirect('/');
+		}
+	)
 });
 
-app.post('/create', (req, res) => {
-  connection.query(
-    'INSERT INTO items (name) VALUES (?)',
-    [req.body.itemName],
-    (error, results) => {
-      res.redirect('/index');
-    }
-  );
-});
 app.post('/signin', (req, res) => {
   connection.query(
     'SELECT * FROM cn_user WHERE username = ? AND password = ?',
@@ -132,10 +120,10 @@ app.post('/signin', (req, res) => {
         req.session.name = results[0].name;
         req.session.id_user = results[0].id_user;
 
-        req.flash('login', 1);
+				req.flash('login', 1);
         res.redirect('/list');
       } else {
-        req.flash('login', 'Wrong Password or Username!');
+				req.flash('login', 'Wrong Password or Username!');
         res.redirect('/');
       }
     }
@@ -143,21 +131,46 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/find', (req, res) => {
-  connection.query(
-    `SELECT * FROM cn_user WHERE username LIKE '%${req.body.username}%'`,
-    (error, results) => {
+	connection.query(
+		`SELECT * FROM cn_user WHERE username LIKE '%${req.body.username}%' and id_user != ${req.session.id_user}`,
+		(error, results) => {
       let hasil;
       if (results.length > 0) {
         hasil = results;
-      } else {
+      }else {
         hasil = 0;
       }
       res.render('result', {
         user_login: req.session,
         items: hasil,
       });
-    }
-  )
+		}
+	)
+});
+
+app.post('/cek_friend', (req, res) => {
+	connection.query(
+		`SELECT * FROM cn_friend WHERE id_friend != ${req.body.id_friend}`,
+		(error, results) => {
+      let hasil;
+      if (results.length > 0) {
+        hasil = 1;
+      }else {
+        hasil = 0;
+      }
+      res.json(hasil);
+		}
+	)
+});
+
+app.post('/add_friend', (req, res) => {
+	connection.query(
+    `INSERT INTO cn_friend (id_user, id_friend, id_group_chat) VALUES (?, ?, ?)`,
+    [req.session.id_user, req.body.id_friend, req.body.id_group_chat],
+		(error, results) => {
+      res.json({success:1});
+		}
+	)
 });
 
 app.get('/logout', function(req, res) {

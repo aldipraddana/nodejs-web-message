@@ -65,7 +65,7 @@
           <button type="button" class="btn bg-yellow shadow float-right" name="button_add_friend">🕺🏽 Add Friend</button>
         </div>
         <div class="col-md-12">
-          <table class="table table-borderless mt-3 shadow" style="width: 100%;border-radius:5px;">
+          <table class="table table-borderless mt-3 shadow friend_list" style="width: 100%;border-radius:5px;">
             <thead class="">
               <tr style="border-bottom:1px solid #e3e3e3">
                 <th style="width:7%;text-align:center">No</th>
@@ -78,7 +78,7 @@
               <tr style="">
                 <td style="text-align:center"><%= Number(i)+1 %></td>
                 <td style="vertical-align:middle"><%= item.name %></td>
-                <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</button> </td>
+                <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</a> </td>
               </tr>
               <% }) %>
             </tbody>
@@ -145,6 +145,71 @@
         }
       })
     })
+
+    const add_friend = (id_) => {
+      let tampung_sementara = [];
+      $(`tr[row-id="${id_}"] td`).each((i,v) =>{
+        if (i !== 3) {
+          tampung_sementara.push($(v).text());
+        }
+      })
+
+      $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Sedang Menambahkan Teman..</center>`);
+
+      $.ajax({
+        url: "/cek_friend",
+        type: 'POST',
+        cache: false,
+        dataType: 'JSON',
+        data: {
+          id_friend: id_
+        },
+        success: function(result_) {
+          console.log(result_);
+          if (result_== 1) {
+
+
+            $.ajax({
+              url: "/add_friend",
+              type: 'POST',
+              cache: false,
+              dataType: 'JSON',
+              data: {
+                id_friend: id_,
+                id_group_chat: `<%= user_login.username %>_${tampung_sementara[1]}`
+              },
+              success: function(result) {
+                if (result.success == 1) {
+                  let count_ = $('.friend_list tbody tr').length;
+                  $('.friend_list tbody').append(`<tr style="">
+                                                    <td style="text-align:center">${Number(count_) + 1}</td>
+                                                    <td style="vertical-align:middle">${tampung_sementara[2]}</td>
+                                                    <td style="vertical-align:middle;text-align:center"> <a href="/index/${id_}" class="btn bg-blue shadow">👋 Chat</a> </td>
+                                                  </tr>`);
+                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
+                  setTimeout(function () {
+                    $('.find_area__').html(``);
+                  }, 579);
+                }else {
+                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} </center>`);
+                }
+              },
+              error: function(XMLHttpRequest, textStatus, errorThrown) {
+                console.error();
+              }
+            })
+
+
+          }else {
+            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah menjadi teman anda.</center>`);
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.error();
+        }
+      })
+
+    }
 
     // function chat_to(my_friend) {
     //   let socket = io.connect();
