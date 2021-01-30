@@ -6,7 +6,7 @@ let server = require('http').createServer(app);
 let io = require('socket.io').listen(server);
 let flash = require('connect-flash');
 const mysql = require('mysql');
-const path = require('path');
+// const path = require('path');
 const jquery = require('jquery');
 
 // prepare server
@@ -35,7 +35,7 @@ const connection = mysql.createConnection({
   multipleStatements: true
 });
 
-yangterhubung = []
+yangterhubung = [];
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -150,10 +150,12 @@ app.post('/find', (req, res) => {
 
 app.post('/cek_friend', (req, res) => {
 	connection.query(
-		`SELECT * FROM cn_friend WHERE id_friend != ${req.body.id_friend}`,
+		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} and id_user = ${req.session.id_user}`,
 		(error, results) => {
+      console.log(results);
+      console.log(results.length);
       let hasil;
-      if (results.length > 0) {
+      if (results.length === 0) {
         hasil = 1;
       }else {
         hasil = 0;
@@ -198,9 +200,9 @@ io.sockets.on('connection', function(socket) {
   socket.on('myprivatechatroom', function(data) {
     console.log(data);
     // socket.join(data.my_friend);
-    io.emit('notification', {
-      notification_alert: "You have a message!"
-    })
+    // io.emit('notification', {
+    //   notification_alert: "You have a message!"
+    // })
   });
 
   // send message
@@ -210,6 +212,11 @@ io.sockets.on('connection', function(socket) {
       msg: data.message,
       sender: data.username
     });
+    // this for notification
+    // io.emit(`new_notification_${data.group}`, {
+    //   msg: `${data.username} : ${data.message}`,
+    //   sender: data.username
+    // });
   });
 
 
