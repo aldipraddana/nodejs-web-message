@@ -187,9 +187,9 @@
                                                     <td style="vertical-align:middle;text-align:center"> <a href="/index/${id_}" class="btn bg-blue shadow">👋 Chat</a> </td>
                                                   </tr>`);
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
-                  setTimeout(function () {
-                    $('.find_area__').html(``);
-                  }, 579);
+                  // setTimeout(function () {
+                  //   $('.find_area__').html(``);
+                  // }, 579);
                 }else {
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} </center>`);
                 }
@@ -201,7 +201,7 @@
 
 
           }else {
-            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah menjadi teman anda.</center>`);
+            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah ada dikontak anda.</center>`);
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
