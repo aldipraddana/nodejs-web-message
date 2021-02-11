@@ -49,6 +49,9 @@
             </button>
           </div>
           <% } %>
+          <div class="notification_area">
+
+          </div>
           <div class="alert bg-dark text-white shadow" role="alert">
             <strong>Hello,</strong> <%= user_login.name %> 😀
           </div>
@@ -187,9 +190,9 @@
                                                     <td style="vertical-align:middle;text-align:center"> <a href="/index/${id_}" class="btn bg-blue shadow">👋 Chat</a> </td>
                                                   </tr>`);
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
-                  // setTimeout(function () {
-                  //   $('.find_area__').html(``);
-                  // }, 579);
+                  setTimeout(function () {
+                    $('.find_area__').html(``);
+                  }, 579);
                 }else {
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} </center>`);
                 }
@@ -201,7 +204,7 @@
 
 
           }else {
-            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah ada dikontak anda.</center>`);
+            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah menjadi teman anda.</center>`);
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -211,13 +214,20 @@
 
     }
 
-    // function chat_to(my_friend) {
-    //   let socket = io.connect();
-    //   socket.emit('myprivatechatroom', {
-    //     my_friend: my_friend
-    //   });
-    //   alert('mencoba mengirim...')
-    // }
+    $(function() {
+      let socket = io.connect()
+      socket.on(`notification_<%= user_login.id_user %>`, function(data) {
+        $('.notification_area').html(`<div class="alert bg-blue shadow alert-dismissible fade show" role="alert">
+          <strong>New Message From</strong> <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>`);
+    })
+
+
+    })
+
   </script>
 </body>
 

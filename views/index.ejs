@@ -83,6 +83,7 @@
         socket.emit('send_message', {
           username: '<%= user_login.username %>',
           message: message.val(),
+          receiver: <%= data_receiver.id_user %>,
           group: '<%= group.id_group_chat %>'
         });
         message.val('')
@@ -98,15 +99,10 @@
           chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${time}</small></p></div><div class="alert alert-secondary text-left">${data.msg}<div>`)
         }
 
-        console.log('ini di client');
-        console.log(data);
+        // console.log('ini di client');
+        // console.log(data);
       })
 
-      socket.on('notification', function(data) {
-        if (data.notification_alert != '') {
-          alert(`${data.notification_alert}`);
-        }
-      })
 
     })
     // aldi ajibb

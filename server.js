@@ -6,7 +6,7 @@ let server = require('http').createServer(app);
 let io = require('socket.io').listen(server);
 let flash = require('connect-flash');
 const mysql = require('mysql');
-// const path = require('path');
+const path = require('path');
 const jquery = require('jquery');
 
 // prepare server
@@ -35,7 +35,7 @@ const connection = mysql.createConnection({
   multipleStatements: true
 });
 
-yangterhubung = [];
+yangterhubung = []
 
 app.set('views', './views');
 app.set('view engine', 'ejs');
@@ -61,7 +61,7 @@ app.get('/index/:id_receiver', (req, res) => {
       `SELECT cf.id_group_chat FROM cn_user cu
 			 JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
 			 WHERE cu.id_user = ${req.session.id_user}
-       AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});SELECT name FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
+       AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});SELECT name, id_user FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
       (error, results) => {
         // if (error) throw error;
         if (results[0][0] == undefined) {
@@ -150,12 +150,10 @@ app.post('/find', (req, res) => {
 
 app.post('/cek_friend', (req, res) => {
 	connection.query(
-		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} and id_user = ${req.session.id_user}`,
+		`SELECT * FROM cn_friend WHERE id_friend != ${req.body.id_friend}`,
 		(error, results) => {
-      console.log(results);
-      console.log(results.length);
       let hasil;
-      if (results.length === 0) {
+      if (results.length > 0) {
         hasil = 1;
       }else {
         hasil = 0;
@@ -196,15 +194,6 @@ io.sockets.on('connection', function(socket) {
     console.log('Terputus: %s ', yangterhubung.length)
   })
 
-  //makeprivateroom
-  socket.on('myprivatechatroom', function(data) {
-    console.log(data);
-    // socket.join(data.my_friend);
-    // io.emit('notification', {
-    //   notification_alert: "You have a message!"
-    // })
-  });
-
   // send message
   socket.on('send_message', function(data) {
     console.log('sender : ', `new_message_${data.username}`);
@@ -212,11 +201,12 @@ io.sockets.on('connection', function(socket) {
       msg: data.message,
       sender: data.username
     });
-    // this for notification
-    // io.emit(`new_notification_${data.group}`, {
-    //   msg: `${data.username} : ${data.message}`,
-    //   sender: data.username
-    // });
+    io.sockets.emit(`notification_${data.receiver}`, {
+      msg: data.message,
+      sender: data.username,
+      receiver:data.receiver
+    });
+    console.log('data receiver '+data.receiver);
   });
 
 
