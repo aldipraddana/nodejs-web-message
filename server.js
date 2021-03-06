@@ -8,6 +8,7 @@ let flash = require('connect-flash');
 const mysql = require('mysql');
 const path = require('path');
 const jquery = require('jquery');
+const fs = require('fs');
 
 // prepare server
 // app.use('/api', api); // redirect API calls
@@ -115,6 +116,14 @@ app.post('/signin', (req, res) => {
     [req.body.username, req.body.password],
     (error, results) => {
       if (results.length > 0) {
+
+        // try {
+        //   const data_ = fs.readFileSync(__dirname + '/test.txt'), 'utf8')
+        //   console.log(data_);
+        // } catch (err) {
+        //   console.error(err);
+        // }
+
         req.session.loggedin = true;
         req.session.username = req.body.username;
         req.session.name = results[0].name;
