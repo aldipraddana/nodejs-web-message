@@ -62,18 +62,30 @@ app.get('/index/:id_receiver', (req, res) => {
       `SELECT cf.id_group_chat FROM cn_user cu
 			 JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
 			 WHERE cu.id_user = ${req.session.id_user}
-       AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});SELECT name, id_user FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
+       AND (cf.id_user = ${req.params.id_receiver} or cf.id_friend = ${req.params.id_receiver});
+       SELECT name, id_user FROM cn_user WHERE id_user = ${req.params.id_receiver};`,
       (error, results) => {
-        // if (error) throw error;
-        if (results[0][0] == undefined) {
-          res.redirect('/list');
-        } else {
-          res.render('index', {
-            user_login: req.session,
-            data_receiver: results[1][0],
-            group: results[0][0]
+        if (error) throw error;
+
+        connection.query(
+          `SELECT id_chat, user_id, message FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' ORDER BY id_chat ASC`,
+          (error_, history_chat) => {
+            if (error) throw error;
+
+            if (results[0][0] == undefined) {
+              res.redirect('/list');
+            } else {
+              // console.log(history_chat);
+              res.render('index', {
+                user_login: req.session,
+                data_receiver: results[1][0],
+                group: results[0][0],
+                history_chat: history_chat
+              });
+            }
+
           });
-        }
+
       });
   } else {
     res.redirect('/');
@@ -205,17 +217,31 @@ io.sockets.on('connection', function(socket) {
 
   // send message
   socket.on('send_message', function(data) {
-    console.log('sender : ', `new_message_${data.username}`);
-    io.sockets.emit(`new_message_${data.group}`, {
-      msg: data.message,
-      sender: data.username
-    });
-    io.sockets.emit(`notification_${data.receiver}`, {
-      msg: data.message,
-      sender: data.username,
-      receiver:data.receiver
-    });
-    console.log('data receiver '+data.receiver);
+    connection.query(
+    'INSERT INTO cn_chat (message, id_group_chat, user_id) VALUES (?, ?, ?)',
+      [data.message, data.group, data.id_me],
+      (error, results) => {
+        if (results.affectedRows) {
+          // console.log('sender : ', `new_message_${data.username}`);
+          io.sockets.emit(`new_message_${data.group}`, {
+            msg: data.message,
+            sender: data.username
+          });
+
+          io.sockets.emit(`notification_${data.receiver}`, {
+            msg: data.message,
+            sender: data.username,
+            receiver:data.receiver
+          });
+          // console.log('data receiver '+data.receiver);
+        }else {
+          io.sockets.emit(`new_message_${data.group}`, {
+            msg: '~',
+            sender: '~'
+          });
+        }
+      }
+    )
   });
 
 
