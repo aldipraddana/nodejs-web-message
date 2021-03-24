@@ -68,7 +68,7 @@ app.get('/index/:id_receiver', (req, res) => {
         if (error) throw error;
 
         connection.query(
-          `SELECT id_chat, user_id, message FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' ORDER BY id_chat ASC`,
+          `SELECT id_chat, user_id, message, time_chat FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' ORDER BY id_chat ASC`,
           (error_, history_chat) => {
             if (error) throw error;
 
@@ -218,28 +218,37 @@ io.sockets.on('connection', function(socket) {
   // send message
   socket.on('send_message', function(data) {
     connection.query(
-    'INSERT INTO cn_chat (message, id_group_chat, user_id) VALUES (?, ?, ?)',
-      [data.message, data.group, data.id_me],
+    'INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat) VALUES (?, ?, ?, ?)',
+      [data.message, data.group, data.id_me, data.time_chat],
       (error, results) => {
-        if (results.affectedRows) {
-          // console.log('sender : ', `new_message_${data.username}`);
-          io.sockets.emit(`new_message_${data.group}`, {
-            msg: data.message,
-            sender: data.username
-          });
+        if (results != undefined) {
+          if (results.affectedRows) {
 
-          io.sockets.emit(`notification_${data.receiver}`, {
-            msg: data.message,
-            sender: data.username,
-            receiver:data.receiver
-          });
-          // console.log('data receiver '+data.receiver);
+            io.sockets.emit(`new_message_${data.group}`, {
+              msg: data.message,
+              sender: data.username,
+              time: data.time_chat
+            });
+
+            io.sockets.emit(`notification_${data.receiver}`, {
+              msg: data.message,
+              sender: data.username,
+              receiver: data.receiver
+            });
+            // console.log('data receiver '+data.receiver);
+          }else {
+            io.sockets.emit(`new_message_${data.group}`, {
+              msg: '~',
+              sender: '~'
+            });
+          }
         }else {
           io.sockets.emit(`new_message_${data.group}`, {
-            msg: '~',
-            sender: '~'
+            msg: '~*',
+            sender: '~*'
           });
         }
+
       }
     )
   });

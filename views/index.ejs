@@ -51,10 +51,10 @@
           <% history_chat.forEach((v,i)=>{ %>
 
             <% if (v.user_id ==  user_login.id_user) { %>
-              <p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ time</small></p>
+              <p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ <%= v.time_chat %></small></p>
               <div class="alert alert-success text-right"><%= v.message %></div>
             <% } else { %>
-              <p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ time</small></p>
+              <p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ <%= v.time_chat %></small></p>
               <div class="alert alert-secondary text-left"><%= v.message %></div>
             <% } %>
 
@@ -65,7 +65,7 @@
           <div class="form-group row">
             <div class="col-md-9">
               <label>Enter Message</label>
-              <input type="text" class="form-control" id="message" name="" value="">
+              <input type="text" class="form-control" id="message" name="" value="" autocomplete="off">
             </div>
             <div class="col-md-3">
               <label style="color:transparent">Enter</label>
@@ -92,27 +92,33 @@
 
       messageForm.submit(function(e) {
         e.preventDefault()
-        // socket.emit('send_message', message.val())
+
+        //set time now
+        let dt = new Date();
+        let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
+
         socket.emit('send_message', {
           username: '<%= user_login.username %>',
           message: message.val(),
           receiver: <%= data_receiver.id_user %>,
           group: '<%= group.id_group_chat %>',
-          id_me: <%= user_login.id_user %>
+          id_me: <%= user_login.id_user %>,
+          time_chat: time
         });
         message.val('')
       })
 
       socket.on(`new_message_<%= group.id_group_chat %>`, function(data) {
-        //set time now
-        let dt = new Date();
-        let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes());
         if (data.sender == '~') {
           alert("Can't send your message, please check your connection!");
+        }else if (data.sender == '~*') {
+          alert("App under maintenance, wait a few more moments ≧◠‿◠≦✌");
         }else if (data.sender == '<%= user_login.username %>') {
-          chat.append(`<p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ ${time}</small></p><div class="alert alert-success text-right">${data.msg} </div>`)
+          chat.append(`<p class="text-right" style="margin:0;padding:5px 0 5px"><small>You ~ ${data.time}</small></p><div class="alert alert-success text-right">${data.msg} </div>`)
+          $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         } else {
-          chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${time}</small></p><div class="alert alert-secondary text-left">${data.msg}</div>`)
+          chat.append(`<p class="text-left" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${data.time}</small></p><div class="alert alert-secondary text-left">${data.msg}</div>`)
+          $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         }
 
         // console.log('ini di client');
