@@ -18,6 +18,7 @@
     .bg-blue {
       background: #00A3FF !important;
       color: white;
+      width: 100% !important;
       border-color: #00a3ff;
     }
 
@@ -25,6 +26,10 @@
       color: #000;
       border-color: transparent;
       background: #ffb800 !important;
+    }
+
+    .tr_contact:hover{
+        background: #d3dfe6;
     }
   </style>
 </head>
@@ -34,11 +39,11 @@
     <br>
     <div class="">
       <div class="row">
-        <div class="col-md-8">
-          <h3>Inponow Web Message</h3>
+        <div class="col-md-10">
+          <h3>Inponow <span style="color:#00A3FF">Web Chat</span></h3>
         </div>
-        <div class="col-md-4">
-          <a href="/logout" class="btn btn-success float-right bg-yellow shadow">🚀 Logout</a>
+        <div class="col-md-2">
+          <a href="/logout" class="btn btn-success bg-blue nbr0012 shadow">🚀 Logout</a>
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
@@ -52,7 +57,7 @@
           <div class="notification_area">
 
           </div>
-          <div class="alert bg-dark text-white shadow" role="alert">
+          <div class="alert"  style="background:#c4e7fb">
             <strong>Hello,</strong> <%= user_login.name %> 😀
           </div>
         </div>
@@ -61,27 +66,19 @@
         <div class="col-md-12">
           <br>
         </div>
-        <div class="col-md-6">
+        <div class="col-md-10">
           <h5 class="pt-1">Friend List</h5>
         </div>
-        <div class="col-md-6">
-          <button type="button" class="btn bg-yellow shadow float-right" name="button_add_friend">🕺🏽 Add Friend</button>
+        <div class="col-md-2">
+          <button type="button" class="btn bg-blue shadow" name="button_add_friend">🕺🏽 Add Friend</button>
         </div>
         <div class="col-md-12">
-          <table class="table table-borderless mt-3 shadow friend_list" style="width: 100%;border-radius:5px;">
-            <thead class="">
-              <tr style="border-bottom:1px solid #e3e3e3">
-                <th style="width:7%;text-align:center">No</th>
-                <th>Name</th>
-                <th style="width:20%"> </th>
-              </tr>
-            </thead>
+          <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
             <tbody>
               <% items.forEach((item, i) => { %>
-              <tr style="">
-                <td style="text-align:center"><%= Number(i)+1 %></td>
+              <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_user %>')">
+                <td style="text-align:center;vertical-align:middle;width:5%"><%= Number(i)+1 %></td>
                 <td style="vertical-align:middle"><%= item.name %></td>
-                <td style="vertical-align:middle;text-align:center"> <a href="/index/<%= item.id_user %>" class="btn bg-blue shadow">👋 Chat</a> </td>
               </tr>
               <% }) %>
             </tbody>
@@ -89,17 +86,17 @@
         </div>
       </div>
       <div class=" row add__ mt-4" style="display:none">
-        <div class="col-md-6">
+        <div class="col-md-10">
           <h5 class="pt-1">Find Friend</h5>
         </div>
-        <div class="col-md-6">
-          <button type="button" class="btn bg-yellow shadow float-right" name="button_back">🏄🏽 Back</button>
+        <div class="col-md-2">
+          <button type="button" class="btn bg-blue shadow float-right" name="button_back">🏄🏽 Back</button>
         </div>
         <div class="col-md-10 mt-3">
           <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="" style="border-color: transparent;width:100%;border-radius: 7.5px;box-shadow: 0 1px 1px 0 rgba(213, 213, 213, 0.68)">
         </div>
         <div class="col-md-2">
-          <button type="button" style="width:100%" class="btn bg-yellow shadow mt-3 find__" name="button">Find</button>
+          <button type="button" style="width:100%" class="btn bg-yellow shadow mt-3 find__" name="button">🔍 Find</button>
         </div>
         <div class="col-md-12 find_area__">
 
@@ -108,6 +105,12 @@
     </div>
   </div>
   <script type="text/javascript">
+
+    function click_to_chat(n) {
+      console.log(n);
+      location.replace(n);
+    }
+
     $(document).ready(function() {
       setTimeout(function() {
         $('.alert__').fadeOut();
@@ -169,8 +172,7 @@
         },
         success: function(result_) {
           console.log(result_);
-          if (result_== 1) {
-
+          if (result_ == 1) {
 
             $.ajax({
               url: "/add_friend",
@@ -184,10 +186,9 @@
               success: function(result) {
                 if (result.success == 1) {
                   let count_ = $('.friend_list tbody tr').length;
-                  $('.friend_list tbody').append(`<tr style="">
+                  $('.friend_list tbody').append(`<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${id_}')">
                                                     <td style="text-align:center">${Number(count_) + 1}</td>
                                                     <td style="vertical-align:middle">${tampung_sementara[2]}</td>
-                                                    <td style="vertical-align:middle;text-align:center"> <a href="/index/${id_}" class="btn bg-blue shadow">👋 Chat</a> </td>
                                                   </tr>`);
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
                   setTimeout(function () {
@@ -206,6 +207,7 @@
           }else {
             $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah menjadi teman anda.</center>`);
           }
+
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
           console.error();
@@ -227,6 +229,19 @@
 
 
     })
+
+    function respo() {
+      if ($(window).width() > 768) {
+        $('.nbr0012').removeClass('mt-2');
+      } else {
+        $('.nbr0012').addClass('mt-2');
+      }
+    }
+    respo();
+    $(window).resize(function() {
+      respo();
+    })
+
 
   </script>
 </body>

@@ -171,13 +171,14 @@ app.post('/find', (req, res) => {
 
 app.post('/cek_friend', (req, res) => {
 	connection.query(
-		`SELECT * FROM cn_friend WHERE id_friend != ${req.body.id_friend}`,
+		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} AND id_user = ${req.session.id_user}`,
 		(error, results) => {
+      console.log(results);
       let hasil;
       if (results.length > 0) {
-        hasil = 1;
-      }else {
         hasil = 0;
+      }else {
+        hasil = 1;
       }
       res.json(hasil);
 		}
