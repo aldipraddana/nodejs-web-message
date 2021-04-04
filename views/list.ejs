@@ -40,11 +40,9 @@
     <br>
     <div class="">
       <div class="row">
-        <div class="col-md-10">
-          <h3>Inponow <span style="color:#00A3FF">Web Chat</span></h3>
-        </div>
-        <div class="col-md-2">
-          <a href="/logout" class="btn btn-success bg-blue nbr0012 shadow">🚀 Logout</a>
+        <div class="col-md-12">
+          <h3 style="float:left">Inponow <span style="color:#00A3FF">Web Chat</span></h3>
+          <a href="/logout" style="float:right" class="mt-2">🚀 Logout</a>
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
@@ -88,7 +86,7 @@
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
                     <td style="vertical-align:middle"><%= item.name %>
                       <br>
-                      <small><%= item.user_id == user_login.id_user ? 'Anda' : item.name %> : <%= item.message  %> </small>
+                      <small><%= item.user_id == user_login.id_user ? 'You' : item.name %> : <%= item.message  %> </small>
                     </td>
                     <td style="vertical-align:top;float:right"> <small><%= item.time_chat %></small> </td>
                   </tr>
