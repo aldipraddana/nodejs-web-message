@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
-          <div class="alert alert-secondary alert-dismissible fade show alert__" role="alert">
+          <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
             <strong style="font-size:13px">Login Berhasil !</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -120,11 +120,9 @@
             </div>
           </div>
           <div class=" row add__ mt-4" style="display:none">
-            <div class="col-md-10">
-              <h5 class="pt-1">Find Friend</h5>
-            </div>
-            <div class="col-md-2">
-              <button type="button" class="btn bg-blue shadow float-right" name="button_back">🏄🏽 Back</button>
+            <div class="col-md-12">
+              <h5 class="pt-1 float-left">Find Friend</h5>
+              <button type="button" class="float-right" style="background:transparent;border:0;color:#00a3ff" name="button_back">🏄🏽 Back</button>
             </div>
             <div class="col-md-10 mt-3">
               <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
