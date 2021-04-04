@@ -13,7 +13,7 @@ const fs = require('fs');
 // prepare server
 // app.use('/api', api); // redirect API calls
 app.use('/custom', express.static(__dirname + '/node_modules/custom/')); // redirect root
-app.use('/js', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
+app.use('/jsjq', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect CSS bootstrap
 app.use(flash());
@@ -95,10 +95,20 @@ app.get('/index/:id_receiver', (req, res) => {
 app.get('/list', (req, res) => {
   if (req.session.loggedin) {
     connection.query(
-      `SELECT cu.* FROM cn_friend cf, cn_user cu WHERE cf.id_user = ${req.session.id_user} and cf.id_friend = cu.id_user`,
+      `SELECT cu.*
+      FROM cn_friend cf, cn_user cu
+      WHERE cf.id_user = ${req.session.id_user}
+      AND cf.id_friend = cu.id_user;
+      SELECT cc.*, cu.name, cu.id_user id_friend
+      FROM cn_chat cc, cn_user cu
+      WHERE id_chat IN (SELECT MAX(id_chat)
+                        FROM cn_chat WHERE id_group_chat LIKE '%${req.session.username}%'
+                        GROUP BY id_group_chat)
+      AND cu.username = SUBSTRING_INDEX(cc.id_group_chat, "_", (CASE WHEN SUBSTRING_INDEX(cc.id_group_chat, "_", -1) = '${req.session.username}' THEN 1 ELSE -1 END))`,
       (error, results) => {
         res.render('list', {
-          items: results,
+          items: results[0],
+          chat_list: results[1],
           user_login: req.session,
 					flash: req.flash('login')
         });

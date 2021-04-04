@@ -6,8 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inponow Web Chat</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
-  <script src="/js/jquery.min.js" charset="utf-8"></script>
+  <script src="/jsjq/jquery.min.js" charset="utf-8"></script>
   <script src="/js/bootstrap.min.js"></script>
+  <script src="/js/bootstrap.js"></script>
   <script src="/socket.io/socket.io.js" charset="utf-8"></script>
   <style media="screen">
     .shadow {
@@ -23,9 +24,9 @@
     }
 
     .bg-yellow {
-      color: #000;
+      color: #fff;
       border-color: transparent;
-      background: #ffb800 !important;
+      background: #262626 !important;
     }
 
     .tr_contact:hover{
@@ -47,7 +48,7 @@
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
-          <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
+          <div class="alert alert-secondary alert-dismissible fade show alert__" role="alert">
             <strong style="font-size:13px">Login Berhasil !</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -62,44 +63,89 @@
           </div>
         </div>
       </div>
-      <div class="row list__">
+      <div class="row mt-3">
         <div class="col-md-12">
-          <br>
-        </div>
-        <div class="col-md-10">
-          <h5 class="pt-1">Friend List</h5>
-        </div>
-        <div class="col-md-2">
-          <button type="button" class="btn bg-blue shadow" name="button_add_friend">🕺🏽 Add Friend</button>
-        </div>
-        <div class="col-md-12">
-          <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
-            <tbody>
-              <% items.forEach((item, i) => { %>
-              <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_user %>')">
-                <td style="text-align:center;vertical-align:middle;width:5%"><%= Number(i)+1 %></td>
-                <td style="vertical-align:middle"><%= item.name %></td>
-              </tr>
-              <% }) %>
-            </tbody>
-          </table>
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Your Chat</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">My Contact</a>
+            </li>
+            <li class="nav-item" role="presentation">
+              <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+            </li>
+          </ul>
         </div>
       </div>
-      <div class=" row add__ mt-4" style="display:none">
-        <div class="col-md-10">
-          <h5 class="pt-1">Find Friend</h5>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <table class="table table-borderless table-o mt-3" style="width: 100%;border-radius:5px;">
+                <tbody>
+                  <% chat_list.forEach((item, i) => { %>
+                  <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
+                    <td style="vertical-align:middle"><%= item.name %>
+                      <br>
+                      <small><%= item.user_id == user_login.id_user ? 'Anda' : item.name %> : <%= item.message  %> </small>
+                    </td>
+                    <td style="vertical-align:top;float:right"> <small><%= item.time_chat %></small> </td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <div class="col-md-2">
-          <button type="button" class="btn bg-blue shadow float-right" name="button_back">🏄🏽 Back</button>
-        </div>
-        <div class="col-md-10 mt-3">
-          <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="" style="border-color: transparent;width:100%;border-radius: 7.5px;box-shadow: 0 1px 1px 0 rgba(213, 213, 213, 0.68)">
-        </div>
-        <div class="col-md-2">
-          <button type="button" style="width:100%" class="btn bg-yellow shadow mt-3 find__" name="button">🔍 Find</button>
-        </div>
-        <div class="col-md-12 find_area__">
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          <div class="row list__">
+            <div class="col-md-12">
+              <br>
+            </div>
+            <div class="col-md-10">
+              <input type="text" class="form-control" oninput="searhContact(this)" style="width:100%" placeholder="Search..." name="" value="">
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn bg-blue shadow nbr0012" name="button_add_friend">🕺🏽 Add Friend</button>
+            </div>
+            <div class="col-md-12">
+              <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
+                <tbody>
+                  <% items.forEach((item, i) => { %>
+                  <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_user %>')">
+                    <td style="vertical-align:middle"><%= item.name %></td>
+                  </tr>
+                  <% }) %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class=" row add__ mt-4" style="display:none">
+            <div class="col-md-10">
+              <h5 class="pt-1">Find Friend</h5>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="btn bg-blue shadow float-right" name="button_back">🏄🏽 Back</button>
+            </div>
+            <div class="col-md-10 mt-3">
+              <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
+            </div>
+            <div class="col-md-2">
+              <button type="button" style="width:100%;margin-top:20px" class="btn bg-yellow shadow mt-3 find__" name="button">🔍 Find</button>
+            </div>
+            <div class="col-md-12 find_area__">
 
+            </div>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="row">
+            <div class="col-md-12">
+              <br>
+              Me, <%= user_login.name %>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -187,7 +233,6 @@
                 if (result.success == 1) {
                   let count_ = $('.friend_list tbody tr').length;
                   $('.friend_list tbody').append(`<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${id_}')">
-                                                    <td style="text-align:center">${Number(count_) + 1}</td>
                                                     <td style="vertical-align:middle">${tampung_sementara[2]}</td>
                                                   </tr>`);
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
@@ -229,6 +274,18 @@
 
 
     })
+
+    function searhContact(th) {
+      var $rows = $('.friend_list tr');
+      $(th).keyup(function() {
+          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+
+          $rows.show().filter(function() {
+              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+              return !~text.indexOf(val);
+          }).hide();
+      });
+    }
 
     function respo() {
       if ($(window).width() > 768) {
