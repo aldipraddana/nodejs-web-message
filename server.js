@@ -99,7 +99,7 @@ app.get('/list', (req, res) => {
       FROM cn_friend cf, cn_user cu
       WHERE cf.id_user = ${req.session.id_user}
       AND cf.id_friend = cu.id_user;
-      SELECT cc.*, cu.name, cu.id_user id_friend
+      SELECT cc.*, cu.name, cu.id_user id_friend, cu.username
       FROM cn_chat cc, cn_user cu
       WHERE id_chat IN (SELECT MAX(id_chat)
                         FROM cn_chat WHERE id_group_chat LIKE '%${req.session.username}%'
@@ -120,16 +120,29 @@ app.get('/list', (req, res) => {
   }
 });
 
+app.post('/check_username', (req, res) => {
+  connection.query(
+    `SELECT username FROM cn_user WHERE username = '${req.body.username}'`,
+    (error, results) => {
+      if (results.length > 0) {
+        res.json(1);
+      }else {
+        res.json(0);
+      }
+    }
+  )
+})
+
 
 app.post('/signup', (req, res) => {
-	connection.query(
-		'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
-		[req.body.username, req.body.name, req.body.password],
-		(error, results) => {
-			req.flash('login', 'Successfully added account, please login...');
-			res.redirect('/');
-		}
-	)
+  connection.query(
+    'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
+    [req.body.username, req.body.name, req.body.password],
+    (error, results) => {
+      req.flash('login', 'Successfully added account, please login...');
+      res.redirect('/');
+    }
+  )
 });
 
 app.post('/signin', (req, res) => {
@@ -147,7 +160,7 @@ app.post('/signin', (req, res) => {
         // }
 
         req.session.loggedin = true;
-        req.session.username = req.body.username;
+        req.session.username = results[0].username;
         req.session.name = results[0].name;
         req.session.id_user = results[0].id_user;
 
@@ -183,7 +196,7 @@ app.post('/cek_friend', (req, res) => {
 	connection.query(
 		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} AND id_user = ${req.session.id_user}`,
 		(error, results) => {
-      console.log(results);
+      // console.log(results);
       let hasil;
       if (results.length > 0) {
         hasil = 0;
@@ -244,7 +257,10 @@ io.sockets.on('connection', function(socket) {
             io.sockets.emit(`notification_${data.receiver}`, {
               msg: data.message,
               sender: data.username,
-              receiver: data.receiver
+              receiver: data.receiver,
+              time: data.time_chat,
+              id_receiver: data.id_me,
+              name:data.name
             });
             // console.log('data receiver '+data.receiver);
           }else {

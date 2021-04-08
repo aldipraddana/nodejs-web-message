@@ -42,6 +42,11 @@
       font-size: 14px !important
     }
 
+    .shadow {
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20) !important;
+      border-radius: 7.2px;
+    }
+
     ::placeholder {
       color: #BDBDBD;
       opacity: 1;
@@ -149,14 +154,14 @@
               <div class="border-0 card px-4 py-5">
                 <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
                 <% if(flash_login != '' && type == 'signin'){ %>
-                <div class="alert alert-danger alert-dismissible fade show alert__" role="alert">
+                <div class="alert alert-danger alert-dismissible fade shadow show alert__" role="alert">
                   <strong style="font-size:13px"><%= flash_login %></strong>
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
                 <% }else if(flash_login != '' && type == 'signup') { %>
-                <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
+                <div class="alert alert-info alert-dismissible fade shadow show alert__" role="alert">
                   <strong style="font-size:13px"><%= flash_login %></strong>
                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -197,21 +202,24 @@
                 <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
                 <form action="/signup" method="post">
                   <div class="row">
+                    <div class="col-md-12 username_check_area">
+
+                    </div>
                     <div class="col-md">
                       <label class="mb-1">
                         <h6 class="mb-0 text-sm">Username</h6>
                       </label>
-                      <input class="mb-4" type="text" name="username" placeholder="Enter a valid username" autocomplete="off">
+                      <input class="mb-4 ccus" type="text" name="username" required placeholder="Enter a valid username" autocomplete="off">
                     </div>
                     <div class="col-md">
                       <div class=""> <label class="mb-1">
                           <h6 class="mb-0 text-sm">Your Fullname</h6>
-                        </label> <input class="mb-4" type="text" name="name" style="text-transform:capitalize;" autocomplete="off" placeholder="Enter a valid Email"> </div>
+                        </label> <input class="mb-4" type="text" name="name" required style="text-transform:capitalize;" autocomplete="off" placeholder="Enter a valid Email"> </div>
                     </div>
                   </div>
                   <div class="row px-3"> <label class="mb-1">
                       <h6 class="mb-0 text-sm">Password</h6>
-                    </label> <input type="password" class="mb-4" name="password" placeholder="Enter password"> </div>
+                    </label> <input type="password" class="mb-4" name="password" required placeholder="Enter password"> </div>
                   <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
                   <div class="row px-3"> <small>Don't have an account? <a class="login font-weight-bold">Login</a></small> </div>
                 </form>
@@ -234,6 +242,37 @@
       $('.register__').show();
       $('.login__').hide();
     })
+
+    $('.ccus').on('change', function () {
+      $.ajax({
+        url: "/check_username",
+        type: 'POST',
+        cache: false,
+        dataType: 'JSON',
+        data: {
+          username: $(this).val(),
+        },
+        success: function(result) {
+          console.log(result);
+          if (result == 1) {
+            // console.log('berhasil horeloca');
+            $('.username_check_area').html(`<div class="alert alert-danger alert-dismissible fade show shadow" role="alert">
+              Username <b style="text-transform:capitalize">${$('.ccus').val()}</b> has been used, type another username.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>`);
+            $('.ccus').val('');
+          }else {
+
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.error();
+        }
+      })
+    })
+
     $(document).ready(function() {
       setTimeout(function() {
         $('.alert__').fadeOut();

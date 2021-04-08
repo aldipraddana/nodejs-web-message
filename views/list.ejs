@@ -12,7 +12,7 @@
   <script src="/socket.io/socket.io.js" charset="utf-8"></script>
   <style media="screen">
     .shadow {
-      box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20) !important;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20) !important;
       border-radius: 7.2px;
     }
 
@@ -46,7 +46,7 @@
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
-          <div class="alert alert-info alert-dismissible fade show alert__" role="alert">
+          <div class="alert alert-success shadow alert-dismissible fade show alert__" role="alert">
             <strong style="font-size:13px">Login Berhasil !</strong>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -56,7 +56,7 @@
           <div class="notification_area">
 
           </div>
-          <div class="alert"  style="background:#c4e7fb">
+          <div class="alert shadow"  style="background:#c4e7fb">
             <strong>Hello,</strong> <%= user_login.name %> 😀
           </div>
         </div>
@@ -80,15 +80,15 @@
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div class="row">
             <div class="col-md-12">
-              <table class="table table-borderless table-o mt-3" style="width: 100%;border-radius:5px;">
+              <table class="table table-borderless table-o mt-3 table_chat" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
                     <td style="vertical-align:middle"><%= item.name %>
                       <br>
-                      <small><%= item.user_id == user_login.id_user ? 'You' : item.name %> : <%= item.message  %> </small>
+                      <small><%= item.user_id == user_login.id_user ? 'You' : item.name %> : <span class="target_<%= item.username  %>"><%= item.message  %></span> </small>
                     </td>
-                    <td style="vertical-align:top;float:right"> <small><%= item.time_chat %></small> </td>
+                    <td style="vertical-align:top;float:right"> <small class="target_time_<%= item.username  %>"><%= item.time_chat %></small> </td>
                   </tr>
                   <% }) %>
                 </tbody>
@@ -128,7 +128,7 @@
               <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
             </div>
             <div class="col-md-2">
-              <button type="button" style="width:100%;margin-top:20px" class="btn bg-yellow shadow mt-3 find__" name="button">🔍 Find</button>
+              <button type="button" style="width:100%;margin-top:20px" class="btn bg-blue shadow mt-3 find__" name="button">🔍 Find</button>
             </div>
             <div class="col-md-12 find_area__">
 
@@ -146,6 +146,23 @@
       </div>
     </div>
   </div>
+
+  <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
+      <div class="toast-header">
+        <img src="" class="rounded mr-2" alt="">
+        <strong class="mr-auto">InponowWebChat</strong>
+        <small>Now</small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="toast-body">
+         Username Can't Be Empty, Please Type..
+      </div>
+    </div>
+  </div>
+
   <script type="text/javascript">
 
     function click_to_chat(n) {
@@ -170,28 +187,33 @@
     });
 
     $('.find__').on('click', () => {
-      $.ajax({
-        url: "/find",
-        type: 'POST',
-        cache: false,
-        // dataType: 'JSON',
-        data: {
-          username: $('#username__').val(),
-        },
-        beforeSend: function() {
-          $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Loading..</center>`);
-        },
-        success: function(result) {
-          if (result != 0) {
-            $('.find_area__').html(result);
-          } else {
-            $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
+      let val = $('#username__').val();
+      if (val != '') {
+        $.ajax({
+          url: "/find",
+          type: 'POST',
+          cache: false,
+          // dataType: 'JSON',
+          data: {
+            username: val,
+          },
+          beforeSend: function() {
+            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Loading..</center>`);
+          },
+          success: function(result) {
+            if (result != 0) {
+              $('.find_area__').html(result);
+            } else {
+              $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
+            }
+          },
+          error: function(XMLHttpRequest, textStatus, errorThrown) {
+            console.error();
           }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          console.error();
-        }
-      })
+        })
+      }else {
+        $('#liveToast').toast('show')
+      }
     })
 
     const add_friend = (id_) => {
@@ -260,12 +282,27 @@
     $(function() {
       let socket = io.connect()
       socket.on(`notification_<%= user_login.id_user %>`, function(data) {
-        $('.notification_area').html(`<div class="alert bg-blue shadow alert-dismissible fade show" role="alert">
-          <strong>New Message From</strong> <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
+        $('.notification_area').html(`<div class="alert alert-success shadow alert-dismissible fade show" role="alert">
+          New Message From <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>`);
+        console.log($(`.target_${data.sender}`).text(), 'cek notif');
+        if ($(`.target_${data.sender}`).text() == '') {
+          let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${data.id_receiver}')">
+                              <td style="vertical-align:middle">${data.name}
+                                <br>
+                                <small>${data.name} : <span class="target_${data.sender}">${data.msg}</span> </small>
+                              </td>
+                              <td style="vertical-align:top;float:right"> <small class="target_time_${data.sender}">${data.time}</small> </td>
+                            </tr>`;
+          $('.table_chat tbody').append(new_message);
+        }else {
+          $(`.target_${data.sender}`).text(data.msg);
+          $(`.target_time_${data.sender}`).text(data.time);
+        }
+
     })
 
 
