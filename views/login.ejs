@@ -174,13 +174,13 @@
                     </label> <input class="mb-4" type="text" name="username" placeholder="Enter a valid username" autocomplete="off"> </div>
                   <div class="row px-3"> <label class="mb-1">
                       <h6 class="mb-0 text-sm">Password</h6>
-                    </label> <input type="password" name="password" placeholder="Enter password"> </div>
+                    </label> <input type="password" name="password" class="passw1" placeholder="Enter password"> </div>
                   <div class="row px-3 mb-4">
                     <div class="custom-control custom-checkbox custom-control-inline"> <input id="chk1" type="checkbox" name="chk" class="custom-control-input"> <label for="chk1" class="custom-control-label text-sm">Show Password</label> </div> <a
                       href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
                   </div>
                   <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Login</button> </div>
-                  <div class="row px-3"> <small>Have an account? <a class="register font-weight-bold">Register</a></small> </div>
+                  <div class="row px-3"> <small>Haven't an account? <a class="register font-weight-bold">Register</a></small> </div>
                 </form>
               </div>
             </div>
@@ -221,7 +221,7 @@
                       <h6 class="mb-0 text-sm">Password</h6>
                     </label> <input type="password" class="mb-4" name="password" required placeholder="Enter password"> </div>
                   <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
-                  <div class="row px-3"> <small>Don't have an account? <a class="login font-weight-bold">Login</a></small> </div>
+                  <div class="row px-3"> <small>Have an account? <a class="login font-weight-bold">Login</a></small> </div>
                 </form>
               </div>
             </div>
@@ -264,7 +264,7 @@
             </div>`);
             $('.ccus').val('');
           }else {
-
+            $('.username_check_area').html('');
           }
         },
         error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -277,6 +277,14 @@
       setTimeout(function() {
         $('.alert__').fadeOut();
       }, 3000);
+    })
+
+    $('#chk1').on('change', function() {
+      if(this.checked) {
+        $('.passw1').attr('type', 'input');
+      }else {
+        $('.passw1').attr('type', 'password');
+      }
     })
   </script>
 </body>
