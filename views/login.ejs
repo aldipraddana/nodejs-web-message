@@ -10,9 +10,20 @@
   <script src="/js/bootstrap.min.js"></script>
   <script src="/socket.io/socket.io.js" charset="utf-8"></script>
   <style media="screen">
+    @font-face {
+      font-family: 'sans-bold';
+      src: url('/font/OpenSans-Bold.ttf');
+    }
+
+    @font-face {
+      font-family: 'sans';
+      src: url('/font/OpenSans-Regular.ttf');
+    }
+
     body {
       color: #000;
       overflow-x: hidden;
+      font-family: 'sans';
       height: 100%;
       background-color: #fff;
       background-repeat: no-repeat
@@ -43,7 +54,8 @@
     }
 
     .shadow {
-      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20) !important;
+      /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important; */
+      box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.3) 0px 0px 0px 1px !important;
       border-radius: 7.2px;
     }
 
@@ -66,15 +78,15 @@
     input,
     textarea {
       padding: 10px 12px 10px 12px;
-      border: 1px solid lightgrey;
-      border-radius: 2px;
+      border: 1px solid transparent;
+      box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.3) 0px 0px 0px 1px;
+      border-radius: 7px;
       margin-bottom: 5px;
       margin-top: 2px;
       width: 100%;
-      box-sizing: border-box;
       color: #2C3E50;
       font-size: 14px;
-      letter-spacing: 1px
+      letter-spacing: 1px;
     }
 
     input:focus,
@@ -101,9 +113,9 @@
     .btn-blue {
       width: 150px;
       border-radius: 2px;
-      background: #00A3FF !important;
+      background: #00CF68 !important;
       color: white;
-      border-color: #00a3ff;
+      border-color: #00CF68;
       box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.20) !important;
       border-radius: 7.2px;
     }
@@ -152,7 +164,7 @@
                 </div> -->
             <div class="col-lg-12">
               <div class="border-0 card px-4 py-5">
-                <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
+                <h4 class="pb-3">Inponow <span style="color:#00CF68;font-family:'sans-bold'">Web Chat</span></h4>
                 <% if(flash_login != '' && type == 'signin'){ %>
                 <div class="alert alert-danger alert-dismissible fade shadow show alert__" role="alert">
                   <strong style="font-size:13px"><%= flash_login %></strong>
@@ -180,7 +192,7 @@
                       href="#" class="ml-auto mb-0 text-sm">Forgot Password?</a>
                   </div>
                   <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Login</button> </div>
-                  <div class="row px-3"> <small>Haven't an account? <a class="register font-weight-bold">Register</a></small> </div>
+                  <div class="row px-3"> <small>Haven't an account? <a class="register font-weight-bold" style="font-family:'sans-bold'">Register</a></small> </div>
                 </form>
               </div>
             </div>
@@ -199,7 +211,7 @@
           <div class="row d-flex">
             <div class="col-lg-12">
               <div class="border-0 card px-4 py-5">
-                <h4 class="pb-3">Inponow <span style="color:#00A3FF">Web Chat</span></h4>
+                <h4 class="pb-3">Inponow <span style="color:#00CF68">Web Chat</span></h4>
                 <form action="/signup" method="post">
                   <div class="row">
                     <div class="col-md-12 username_check_area">
@@ -221,7 +233,7 @@
                       <h6 class="mb-0 text-sm">Password</h6>
                     </label> <input type="password" class="mb-4" name="password" required placeholder="Enter password"> </div>
                   <div class="row mb-3 px-3 "> <button type="submit" class="btn btn-blue text-center">Register</button> </div>
-                  <div class="row px-3"> <small>Have an account? <a class="login font-weight-bold">Login</a></small> </div>
+                  <div class="row px-3"> <small>Have an account? <a class="login font-weight-bold" style="font-family:'sans-bold'">Login</a></small> </div>
                 </form>
               </div>
             </div>

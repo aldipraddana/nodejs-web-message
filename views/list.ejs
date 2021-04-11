@@ -11,16 +11,36 @@
   <script src="/js/bootstrap.js"></script>
   <script src="/socket.io/socket.io.js" charset="utf-8"></script>
   <style media="screen">
+    @font-face {
+      font-family: 'sans-bold';
+      src: url('/font/OpenSans-Bold.ttf');
+    }
+
+    @font-face {
+      font-family: 'sans';
+      src: url('/font/OpenSans-Regular.ttf');
+    }
+
+    body{
+      font-family: 'sans';
+    }
+
     .shadow {
-      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.14), 0 2px 1px -1px rgba(0,0,0,0.12), 0 1px 3px 0 rgba(0,0,0,0.20) !important;
+      /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important; */
+      box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px !important;
       border-radius: 7.2px;
     }
 
     .bg-blue {
-      background: #00A3FF !important;
+      background: #00CF68 !important;
       color: white;
       width: 100% !important;
-      border-color: #00a3ff;
+      border-color: #00CF68;
+    }
+
+    a{
+      color:#011f32 !important;
+      font-weight: bold;
     }
 
     .bg-yellow {
@@ -30,7 +50,7 @@
     }
 
     .tr_contact:hover{
-        background: #d3dfe6;
+      background:rgba(0, 207, 104, 0.11);
     }
   </style>
 </head>
@@ -41,13 +61,13 @@
     <div class="">
       <div class="row">
         <div class="col-md-12">
-          <h3 style="float:left">Inponow <span style="color:#00A3FF">Web Chat</span></h3>
-          <a href="/logout" style="float:right" class="mt-2">🚀 Logout</a>
+          <h3 style="float:left">Inponow <span style="color:#00CF68;font-family: 'sans-bold';">Web Chat</span></h3>
+          <a href="/logout" style="float:right;font-family: 'sans-bold';" class="mt-2">🚀 Logout</a>
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
-          <div class="alert alert-success shadow alert-dismissible fade show alert__" role="alert">
-            <strong style="font-size:13px">Login Berhasil !</strong>
+          <div class="alert shadow alert-dismissible fade show alert__" style="background:rgba(0, 207, 104, 0.11);color:#00b75c" role="alert">
+            Login <b>Success !</b>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -56,14 +76,14 @@
           <div class="notification_area">
 
           </div>
-          <div class="alert shadow"  style="background:#c4e7fb">
-            <strong>Hello,</strong> <%= user_login.name %> 😀
+            <div class="alert shadow" style="background:rgba(0, 207, 104, 0.11);color:#00b75c">
+            <span style="font-family: 'sans-bold'">Hello,</span> <%= user_login.name %> 😀
           </div>
         </div>
       </div>
       <div class="row mt-3">
         <div class="col-md-12">
-          <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <ul class="nav nav-tabs" id="myTab" role="tablist" style="font-family: 'sans-bold'">
             <li class="nav-item" role="presentation">
               <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Your Chat</a>
             </li>
@@ -84,7 +104,7 @@
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
-                    <td style="vertical-align:middle"><%= item.name %>
+                    <td style="vertical-align:middle"> <b><%= item.name %></b>
                       <br>
                       <small> <span class="sender_chat_<%= item.username %>"><%= item.user_id == user_login.id_user ? 'You' : item.name %></span> : <span class="target_<%= item.username  %>"><%= item.message  %></span> </small>
                     </td>
@@ -122,7 +142,7 @@
           <div class=" row add__ mt-4" style="display:none">
             <div class="col-md-12">
               <h5 class="pt-1 float-left">Find Friend</h5>
-              <button type="button" class="float-right" style="background:transparent;border:0;color:#00a3ff" name="button_back">🏄🏽 Back</button>
+              <button type="button" class="float-right" style="background:transparent;border:0;color:#00CF68;font-family:'sans-bold';" name="button_back">🏄🏽 Back</button>
             </div>
             <div class="col-md-10 mt-3">
               <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
@@ -150,15 +170,14 @@
   <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
     <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000">
       <div class="toast-header">
-        <img src="" class="rounded mr-2" alt="">
-        <strong class="mr-auto">InponowWebChat</strong>
+        <strong class="mr-auto">Inponow <span style="color:#00CF68;font-family: 'sans-bold';">Web Chat</span></strong>
         <small>Now</small>
         <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="toast-body">
-         Username Can't Be Empty, Please Type..
+         Username Form Input Can't Be Empty, Please Type..
       </div>
     </div>
   </div>
@@ -282,13 +301,13 @@
     $(function() {
       let socket = io.connect()
       socket.on(`notification_<%= user_login.id_user %>`, function(data) {
-        $('.notification_area').html(`<div class="alert alert-success shadow alert-dismissible fade show" role="alert">
+        $('.notification_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:rgba(0, 207, 104, 0.11);color:#00b75c" role="alert">
           New Message From <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>`);
-        console.log($(`.target_${data.sender}`).text(), 'cek notif');
+        // console.log($(`.target_${data.sender}`).text(), 'cek notif');
         if ($(`.target_${data.sender}`).text() == '') {
           let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${data.id_receiver}')">
                               <td style="vertical-align:middle">${data.name}

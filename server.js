@@ -16,6 +16,8 @@ app.use('/custom', express.static(__dirname + '/node_modules/custom/')); // redi
 app.use('/jsjq', express.static(__dirname + '/node_modules/jquery/dist')); // redirect JS jQuery
 app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js')); // redirect bootstrap JS
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css')); // redirect CSS bootstrap
+app.use('/font', express.static(__dirname + '/font')); // redirect root
+
 app.use(flash());
 app.use(express.static('public'));
 app.use(express.urlencoded({
