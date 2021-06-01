@@ -159,6 +159,11 @@
           <div class="row">
             <div class="col-md-12">
               <br>
+              <div class="bg-blue p-5 mb-2" style="border-radius:10px">
+                <center>
+                  <img src="/img/example.jpg" style="width:250px;border-radius:10px" title="click to change your photo" alt=""  data-toggle="modal" data-target="#edit_profil">
+                </center>
+              </div>
               Me, <%= user_login.name %>
             </div>
           </div>
@@ -178,6 +183,27 @@
       </div>
       <div class="toast-body">
          Username Form Input Can't Be Empty, Please Type..
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="edit_profil" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit photo profile</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          ...
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn" style="background: #00CF68 !important;color: white;">Save changes</button>
+        </div>
       </div>
     </div>
   </div>

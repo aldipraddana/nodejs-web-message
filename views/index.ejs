@@ -149,10 +149,12 @@
         }else if (data.sender == '~*') {
           alert("App under maintenance, wait a few more moments ≧◠‿◠≦✌");
         }else if (data.sender == '<%= user_login.username %>') {
-          chat.append(`<p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ ${data.time}</small></p><div class="p-3 text-right" style="background: rgba(0, 207, 104, 0.11);border-radius:7px;">${data.msg} </div>`)
+          chat.append(`<p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ ${data.time}</small></p>
+                      <div class="p-3 text-right" style="background: rgba(0, 207, 104, 0.11);border-radius:7px;">${data.msg} </div>`)
           $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         } else {
-          chat.append(`<p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${data.time}</small></p><div class="p-3 text-left"  style="background: #011f32;border-radius:7px;">${data.msg}</div>`)
+          chat.append(`<p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${data.time}</small></p>
+                      <div class="p-3 text-left"  style="background: #808f99;border-radius:7px;color:#fff">${data.msg}</div>`)
           $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         }
 
