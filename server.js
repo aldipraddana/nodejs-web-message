@@ -1,5 +1,6 @@
 let express = require('express');
 let session = require('express-session');
+let expressFileupload = require('express-fileupload');
 let app = express();
 
 let server = require('http').createServer(app);
@@ -30,6 +31,8 @@ app.use(session({
   resave: true,
   saveUninitialized: true
 }));
+
+app.use(expressFileupload());
 
 const connection = mysql.createConnection({
   host: 'localhost',
@@ -102,18 +105,20 @@ app.get('/list', (req, res) => {
       FROM cn_friend cf, cn_user cu
       WHERE cf.id_user = ${req.session.id_user}
       AND cf.id_friend = cu.id_user;
-      SELECT cc.*, cu.name, cu.id_user id_friend, cu.username
+      SELECT cc.*, cu.name, cu.id_user id_friend, cu.username, cu.img_profile
       FROM cn_chat cc, cn_user cu
       WHERE id_chat IN (SELECT MAX(id_chat)
                         FROM cn_chat WHERE id_group_chat LIKE '%${req.session.username}%'
                         GROUP BY id_group_chat)
-      AND cu.username = SUBSTRING_INDEX(cc.id_group_chat, "_", (CASE WHEN SUBSTRING_INDEX(cc.id_group_chat, "_", -1) = '${req.session.username}' THEN 1 ELSE -1 END))`,
+      AND cu.username = SUBSTRING_INDEX(cc.id_group_chat, "_", (CASE WHEN SUBSTRING_INDEX(cc.id_group_chat, "_", -1) = '${req.session.username}' THEN 1 ELSE -1 END));
+      SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
       (error, results) => {
         res.render('list', {
           items: results[0],
           chat_list: results[1],
           user_login: req.session,
-					flash: req.flash('login')
+					flash: req.flash('login'),
+          img_profile: results[2][0].img_profile
         });
       }
     );
@@ -221,6 +226,54 @@ app.post('/add_friend', (req, res) => {
 	)
 });
 
+app.post('/uploadpp', function(req, res) {
+  let thefile = req.files.img;
+
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded. Back');
+  }else if (thefile.mimetype.split('/')[0] != 'image') {
+    return res.status(400).send('file must be image. Back');
+  }
+  let name_file = +new Date() + thefile.md5;
+  let path = __dirname + '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
+  let for_save = '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
+  thefile.mv(path, function(err) {
+    if (err){
+      return res.status(500).send(err);
+    }else {
+      connection.query(
+        `SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
+        (error, img_data) => {
+          if (img_data.length > 0) {
+            fs.unlink(__dirname+img_data[0].img_profile, (err) => {
+              if (err) {
+                console.error(err)
+              }
+            })
+          }
+
+          //UPDATE
+          connection.query(
+            `UPDATE cn_user SET img_profile = ? WHERE id_user = ?`,
+            [for_save, req.session.id_user],
+        		(error, results) => {
+              if (error) {
+                return res.status(400).send('Service Unracable, try again later. Back');
+              }else {
+                res.redirect('/list');
+              }
+        		}
+        	)
+
+        }
+      )
+
+
+    }
+  });
+
+});
+
 app.get('/logout', function(req, res) {
   req.session.destroy((err) => {
     if (err) {
@@ -229,9 +282,6 @@ app.get('/logout', function(req, res) {
     res.redirect('/');
   });
 });
-
-// app.use(express.static(path.join(__dirname, 'assets/bootstrap.min.css')))
-// app.use(express.static(path.join(__dirname, 'assets/bootstrap.min.js')))
 
 io.sockets.on('connection', function(socket) {
   yangterhubung.push(socket);

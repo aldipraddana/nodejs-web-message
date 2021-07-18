@@ -1,7 +1,7 @@
 {
   "name": "inponowwebmessage",
   "version": "1.0.0",
-  "description": "inponow web message belajar aldi",
+  "description": "inponow web message by aldi",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
     "connect-flash": "^0.1.1",
     "ejs": "^3.1.5",
     "express": "*",
+    "express-fileupload": "^1.2.1",
     "express-session": "^1.17.1",
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",

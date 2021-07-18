@@ -52,6 +52,14 @@
     .tr_contact:hover{
       background:rgba(0, 207, 104, 0.11);
     }
+
+    .btn-simple-cs{
+      border:1px solid #00CF68;width:100%;color:#20995d;
+    }
+
+    .input-info{
+      border:none;cursor: pointer;padding:0;
+    }
   </style>
 </head>
 
@@ -66,7 +74,7 @@
         </div>
         <div class="col-md-12 mt-3">
           <% if(flash == 1){ %>
-          <div class="alert shadow alert-dismissible fade show alert__" style="background:rgba(0, 207, 104, 0.11);color:#00b75c" role="alert">
+          <div class="alert shadow alert-dismissible fade show alert__" style="background:#1ab065;color:#e3e3e3;border:none" role="alert">
             Login <b>Success !</b>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
@@ -85,13 +93,13 @@
         <div class="col-md-12">
           <ul class="nav nav-tabs" id="myTab" role="tablist" style="font-family: 'sans-bold'">
             <li class="nav-item" role="presentation">
-              <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Your Chat</a>
+              <a class="nav-link active" id="home-tab" onclick="save_tab('home-tab')" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Your Chat</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">My Contact</a>
+              <a class="nav-link" id="contact-tab" onclick="save_tab('contact-tab')" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">My Contact</a>
             </li>
             <li class="nav-item" role="presentation">
-              <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
+              <a class="nav-link" id="profile-tab" onclick="save_tab('profile-tab')" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Profile</a>
             </li>
           </ul>
         </div>
@@ -104,6 +112,7 @@
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
+                    <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
                     <td style="vertical-align:middle"> <b><%= item.name %></b>
                       <br>
                       <small> <span class="sender_chat_<%= item.username %>"><%= item.user_id == user_login.id_user ? 'You' : item.name %></span> : <span class="target_<%= item.username  %>"><%= item.message  %></span> </small>
@@ -122,16 +131,17 @@
               <br>
             </div>
             <div class="col-md-10">
-              <input type="text" class="form-control" oninput="searhContact(this)" style="width:100%" placeholder="Search..." name="" value="">
+              <input type="text" class="form-control" oninput="searhContact(this)" style="width:100%" placeholder="Filter your friend name..." name="" value="">
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn bg-blue shadow nbr0012" name="button_add_friend">🕺🏽 Add Friend</button>
+              <button type="button" class="btn shadow nbr0012 btn-simple-cs" name="button_add_friend">➕ Find Friend</button>
             </div>
             <div class="col-md-12">
               <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% items.forEach((item, i) => { %>
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_user %>')">
+                    <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
                     <td style="vertical-align:middle"><%= item.name %></td>
                   </tr>
                   <% }) %>
@@ -139,19 +149,25 @@
               </table>
             </div>
           </div>
-          <div class=" row add__ mt-4" style="display:none">
+          <div class="row">
             <div class="col-md-12">
-              <h5 class="pt-1 float-left">Find Friend</h5>
-              <button type="button" class="float-right" style="background:transparent;border:0;color:#00CF68;font-family:'sans-bold';" name="button_back">🏄🏽 Back</button>
-            </div>
-            <div class="col-md-10 mt-3">
-              <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
-            </div>
-            <div class="col-md-2">
-              <button type="button" style="width:100%;margin-top:20px" class="btn bg-blue shadow mt-3 find__" name="button">🔍 Find</button>
-            </div>
-            <div class="col-md-12 find_area__">
+              <div class="add__ " style="display:none;background:rgba(0, 207, 104, 0.11);border-radius:10px;">
+                <div class="row mt-3 p-3">
+                  <div class="col-md-12">
+                    <h5 class="float-left font-weight-bold">Find Friend</h5>
+                    <button type="button" class="float-right" style="background:transparent;border:0;color:#00CF68;font-family:'sans-bold';" name="button_back">🏄🏽 Back</button>
+                  </div>
+                  <div class="col-md-10 mt-3">
+                    <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
+                  </div>
+                  <div class="col-md-2">
+                    <button type="button" class="btn shadow mt-3 find__ btn-simple-cs" style="" name="button">🔍 Find</button>
+                  </div>
+                  <div class="col-md-12 find_area__">
 
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -159,17 +175,44 @@
           <div class="row">
             <div class="col-md-12">
               <br>
-              <div class="bg-blue p-5 mb-2" style="border-radius:10px">
+              <div class="p-5 mb-2" style="border-radius:10px;background:rgba(0, 207, 104, 0.11)">
                 <center>
-                  <img src="/img/example.jpg" style="width:250px;border-radius:10px" title="click to change your photo" alt=""  data-toggle="modal" data-target="#edit_profil">
+                  <img src="<%= img_profile != '' ? img_profile : '/img/default.png' %>" style="width:250px;border-radius:10px" title="click to change your photo" alt=""  data-toggle="modal" data-target="#edit_profil">
                 </center>
               </div>
-              Me, <%= user_login.name %>
+              <table style="width:100%">
+                <tr style="border-bottom:1px solid #cdcdcd;">
+                  <td>Name</td>
+                </tr>
+                <tr>
+                  <td class="pt-2">
+                    <input type="text" class="form-control input-info" name="" value="<%= user_login.name %>">
+                  </td>
+                </tr>
+                <tr style="border-bottom:1px solid #cdcdcd;">
+                  <td class="pt-3">Information</td>
+                </tr>
+                <tr>
+                  <td class="pt-2">
+                    <input type="text" class="form-control input-info" name="" value="Ex : I'm Actually Superman, But don't tell anyone.">
+                  </td>
+                </tr>
+              </table>
             </div>
           </div>
         </div>
       </div>
+      <footer class="row mt-4">
+        <div class="col-md-12" >
+          <div style="border-top:1px solid #00b75c;">
+            <div class="pt-3 pb-3 float-right">
+              © Copyright 2021 Aldi Pradana
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
+
   </div>
 
   <div class="position-fixed bottom-0 right-0 p-3" style="z-index: 5; right: 0; bottom: 0;">
@@ -191,34 +234,83 @@
   <div class="modal fade" id="edit_profil" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
+        <form action="/uploadpp" method="post" enctype="multipart/form-data">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalLabel">Edit photo profile</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
         </div>
         <div class="modal-body">
-          ...
+            <div class="form-group">
+              <!-- <label for="exampleFormControlFile1">Choose Photo</label> -->
+              <input name="img" type="file" class="form-control-file" id="FormControlFile1" accept="image/*">
+              <img src="<%= img_profile %>" id="preview-profile" class="mt-2" alt="" style="width:100%">
+            </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn" style="background: #00CF68 !important;color: white;">Save changes</button>
+          <button type="submit" class="btn" style="background: #00CF68 !important;color: white;">Save changes</button>
         </div>
+        </form>
       </div>
     </div>
   </div>
 
   <script type="text/javascript">
 
+  $('#FormControlFile1').on('change', function() {
+    let reader = new FileReader()
+    reader.onload = function(){
+      var output = $('#preview-profile')[0]
+      output.src = reader.result
+    };
+    reader.readAsDataURL(event.target.files[0])
+  })
+
     function click_to_chat(n) {
       console.log(n);
       location.replace(n);
     }
 
+    function isStorageExist() {
+       if(typeof(Storage) === undefined){
+           console.log("Browser kamu tidak mendukung local storage");
+           return false
+       }
+       return true;
+    }
+
+    function ws(master) {
+      localStorage.setItem('INPONOW_WEB_CHAT', JSON.stringify(master))
+    }
+
+    function save_tab(n) {
+      let data = {
+        'tab_opened' : n
+      }
+      ws(data);
+      // console.log(JSON.parse(localStorage.getItem('INPONOW_WEB_CHAT')), 'ini web storage');
+    }
+
     $(document).ready(function() {
       setTimeout(function() {
         $('.alert__').fadeOut();
-      }, 2000);
+      }, 3000);
+
+      if (isStorageExist()) {
+        let tab = JSON.parse(localStorage.getItem('INPONOW_WEB_CHAT'))
+        if (tab != null) {
+          if (tab.tab_opened == 'contact-tab') {
+            $(`#home-tab`).removeClass('active').removeClass('.show');
+            $(`#home`).removeClass('active').removeClass('.show');
+            $(`#contact-tab`).addClass('active').addClass('show');
+            $(`#contact`).addClass('active').addClass('show');
+          }else if (tab.tab_opened == 'profile-tab') {
+            $(`#home-tab`).removeClass('active').removeClass('.show');
+            $(`#home`).removeClass('active').removeClass('.show');
+            $(`#profile-tab`).addClass('active').addClass('show');
+            $(`#profile`).addClass('active').addClass('show');
+          }
+        }
+      }
     });
 
     $('button[name="button_add_friend"]').on('click', function() {

@@ -10,11 +10,11 @@
     </thead>
     <tbody>
       <% items.forEach((item, i) => { %>
-      <tr row-id="<%= item.id_user %>">
+      <tr row-id="<%= item.id_user %>" style="border-bottom:1px solid #cdcdcd;">
         <td style="text-align:center;vertical-align:middle" hidden><%= Number(i)+1 %></td>
         <td style="vertical-align:middle;display:none;"><%= item.username %></td>
         <td style="vertical-align:middle"><%= item.name %></td>
-        <td style="vertical-align:middle;text-align:center"> <button class="btn shadow" onclick="add_friend('<%= item.id_user %>')">➕</button> </td>
+        <td style="vertical-align:middle;text-align:center"> <button class="btn shadow btn-simple-cs" onclick="add_friend('<%= item.id_user %>')">➕</button> </td>
       </tr>
       <% }) %>
     </tbody>
