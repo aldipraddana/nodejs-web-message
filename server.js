@@ -74,8 +74,9 @@ app.get('/index/:id_receiver', (req, res) => {
         if (error) throw error;
 
         connection.query(
-          `SELECT id_chat, user_id, message, time_chat FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' ORDER BY id_chat ASC`,
-          (error_, history_chat) => {
+          `SELECT id_chat, user_id, message, time_chat FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' AND who = '${req.session.username}' ORDER BY id_chat ASC;
+          SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
+          (error_, return_two) => {
             if (error) throw error;
 
             if (results[0][0] == undefined) {
@@ -86,7 +87,8 @@ app.get('/index/:id_receiver', (req, res) => {
                 user_login: req.session,
                 data_receiver: results[1][0],
                 group: results[0][0],
-                history_chat: history_chat
+                history_chat: return_two[0],
+                img_profile: return_two[1][0].img_profile
               });
             }
 
@@ -109,6 +111,7 @@ app.get('/list', (req, res) => {
       FROM cn_chat cc, cn_user cu
       WHERE id_chat IN (SELECT MAX(id_chat)
                         FROM cn_chat WHERE id_group_chat LIKE '%${req.session.username}%'
+                        AND who = '${req.session.username}'
                         GROUP BY id_group_chat)
       AND cu.username = SUBSTRING_INDEX(cc.id_group_chat, "_", (CASE WHEN SUBSTRING_INDEX(cc.id_group_chat, "_", -1) = '${req.session.username}' THEN 1 ELSE -1 END));
       SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
@@ -217,18 +220,25 @@ app.post('/cek_friend', (req, res) => {
 });
 
 app.post('/add_friend', (req, res) => {
+  if (req.session.loggedin) {
 	connection.query(
-    `INSERT INTO cn_friend (id_user, id_friend, id_group_chat) VALUES (?, ?, ?)`,
+    `INSERT INTO cn_friend (id_user, id_friend, id_group_chat) VALUES (?, ?, ?);
+     SELECT img_profile FROM cn_user WHERE id_user = ${req.body.id_friend}`,
     [req.session.id_user, req.body.id_friend, req.body.id_group_chat],
 		(error, results) => {
-      res.json({success:1});
+      if (results[0].affectedRows) {
+        res.json({success:1,img_profile_friend:`${results[1][0].img_profile}`});
+      }
 		}
 	)
+ }
 });
 
 app.post('/uploadpp', function(req, res) {
   let thefile = req.files.img;
+  if (req.session.loggedin) {
 
+  }
   if (!req.files || Object.keys(req.files).length === 0) {
     return res.status(400).send('No files were uploaded. Back');
   }else if (thefile.mimetype.split('/')[0] != 'image') {
@@ -267,11 +277,29 @@ app.post('/uploadpp', function(req, res) {
 
         }
       )
-
-
     }
   });
+});
 
+app.post('/delete_chat', (req, res) => {
+  if (req.session.loggedin) {
+    connection.query(
+      `SELECT cf.id_group_chat FROM cn_user cu
+       JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
+       WHERE cu.id_user = ${req.session.id_user}
+       AND (cf.id_user = ${req.body.id_friend} or cf.id_friend = ${req.body.id_friend});`,
+      (error, result_1) => {
+        connection.query(
+          `DELETE FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}'`,
+          (error, results) => {
+            if (results.affectedRows) {
+              res.json(1);
+            }else {
+              res.json(0);
+            }
+        })
+      })
+  }
 });
 
 app.get('/logout', function(req, res) {
@@ -294,26 +322,40 @@ io.sockets.on('connection', function(socket) {
 
   // send message
   socket.on('send_message', function(data) {
+    let explode = data.group.split('_');
+    function pad(val) {
+      var str = "" + val;
+      var pad = "00";
+      var ans = pad.substring(0, pad.length - str.length) + str;
+      return ans;
+    }
+
+    let dt = new Date();
+    let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
     connection.query(
-    'INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat) VALUES (?, ?, ?, ?)',
-      [data.message, data.group, data.id_me, data.time_chat],
+    `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who) VALUES
+    ('${data.message}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
+    ('${data.message}', '${data.group}', ${data.id_me}, '${time}', '${explode[1]}')`,
       (error, results) => {
+        console.log(error);
+        console.log(results);
         if (results != undefined) {
           if (results.affectedRows) {
 
             io.sockets.emit(`new_message_${data.group}`, {
               msg: data.message,
               sender: data.username,
-              time: data.time_chat
+              time: time
             });
 
             io.sockets.emit(`notification_${data.receiver}`, {
               msg: data.message,
               sender: data.username,
               receiver: data.receiver,
-              time: data.time_chat,
+              time: time,
               id_receiver: data.id_me,
-              name:data.name
+              name:data.name,
+              img_profile: data.img_profile
             });
             // console.log('data receiver '+data.receiver);
           }else {

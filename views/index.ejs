@@ -120,13 +120,6 @@
       $("html, body").animate({ scrollTop: $(document).height() }, 1000);
     })
 
-    function pad(val) {
-      var str = "" + val;
-      var pad = "00";
-      var ans = pad.substring(0, pad.length - str.length) + str;
-      return ans;
-    }
-
     $(function() {
       let socket = io.connect()
       let chat = $('#chat')
@@ -136,10 +129,6 @@
       messageForm.submit(function(e) {
         e.preventDefault()
 
-        //set time now
-        let dt = new Date();
-        let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
-
         socket.emit('send_message', {
           username: '<%= user_login.username %>',
           message: message.val(),
@@ -147,7 +136,7 @@
           group: '<%= group.id_group_chat %>',
           id_me: <%= user_login.id_user %>,
           name: '<%= user_login.name %>',
-          time_chat: time
+          img_profile: '<%= img_profile %>'
         });
         message.val('')
       })

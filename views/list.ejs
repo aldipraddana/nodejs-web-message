@@ -60,6 +60,14 @@
     .input-info{
       border:none;cursor: pointer;padding:0;
     }
+
+    .trash-custom{
+      width:30px;float:right;cursor:pointer;opacity:0.3;
+    }
+
+    .trash-custom:hover{
+      width:30px;float:right;cursor:pointer;opacity:1;
+    }
   </style>
 </head>
 
@@ -82,6 +90,9 @@
           </div>
           <% } %>
           <div class="notification_area">
+
+          </div>
+          <div class="notification_del_area">
 
           </div>
             <div class="alert shadow" style="background:rgba(0, 207, 104, 0.11);color:#00b75c">
@@ -111,13 +122,14 @@
               <table class="table table-borderless table-o mt-3 table_chat" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
-                  <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_friend %>')">
+                  <tr style="border-bottom:1px solid #cdcdcd;z-index:1" class="tr_contact">
                     <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                    <td style="vertical-align:middle"> <b><%= item.name %></b>
+                    <td onclick="click_to_chat('/index/<%= item.id_friend %>')" style="cursor: pointer;vertical-align:middle;"> <b><%= item.name %></b>
                       <br>
                       <small> <span class="sender_chat_<%= item.username %>"><%= item.user_id == user_login.id_user ? 'You' : item.name %></span> : <span class="target_<%= item.username  %>"><%= item.message  %></span> </small>
                     </td>
-                    <td style="vertical-align:top;float:right"> <small class="target_time_<%= item.username  %>"><%= item.time_chat %></small> </td>
+                    <td style="vertical-align:top;float:right"> <small class="target_time_<%= item.username  %>"><%= item.time_chat %></small> <br> <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(<%= item.id_friend %>, this)"> </td>
+
                   </tr>
                   <% }) %>
                 </tbody>
@@ -182,20 +194,22 @@
               </div>
               <table style="width:100%">
                 <tr style="border-bottom:1px solid #cdcdcd;">
-                  <td>Name</td>
+                  <td colspan="2"> <small>Name</small> </td>
                 </tr>
                 <tr>
-                  <td class="pt-2">
-                    <input type="text" class="form-control input-info" name="" value="<%= user_login.name %>">
+                  <td class="pt-2"style="width:95%">
+                    <%= user_login.name %>
                   </td>
+                  <td class="pt-2"> <span onclick="update_info('name')" style="cursor: pointer;border:none;background:transparent" name="button">✏️</span> </td>
                 </tr>
                 <tr style="border-bottom:1px solid #cdcdcd;">
-                  <td class="pt-3">Information</td>
+                  <td class="pt-3"> <small>Information</small> </td>
                 </tr>
                 <tr>
                   <td class="pt-2">
-                    <input type="text" class="form-control input-info" name="" value="Ex : I'm Actually Superman, But don't tell anyone.">
+                    Ex : I'm Actually Superman, But don't tell anyone.
                   </td>
+                  <td class="pt-2"><span onclick="update_info('info')" style="cursor: pointer;border:none;background:transparent" name="button">✏️</span></td>
                 </tr>
               </table>
             </div>
@@ -388,6 +402,7 @@
                 if (result.success == 1) {
                   let count_ = $('.friend_list tbody tr').length;
                   $('.friend_list tbody').append(`<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${id_}')">
+                                                    <td style="width:65px"><img src="${result.img_profile_friend != '' ? result.img_profile_friend : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
                                                     <td style="vertical-align:middle">${tampung_sementara[2]}</td>
                                                   </tr>`);
                   $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
@@ -395,7 +410,7 @@
                     $('.find_area__').html(``);
                   }, 579);
                 }else {
-                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} </center>`);
+                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Gagal menambahkan ${tampung_sementara[2]}, coba lagi nanti</center>`);
                 }
               },
               error: function(XMLHttpRequest, textStatus, errorThrown) {
@@ -428,11 +443,12 @@
         // console.log($(`.target_${data.sender}`).text(), 'cek notif');
         if ($(`.target_${data.sender}`).text() == '') {
           let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${data.id_receiver}')">
-                              <td style="vertical-align:middle">${data.name}
+                              <td style="width:65px"><img src="${data.img_profile != '' ? data.img_profile : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
+                              <td style="vertical-align:middle"><b>${data.name}</b>
                                 <br>
                                 <small>${data.name} : <span class="target_${data.sender}">${data.msg}</span> </small>
                               </td>
-                              <td style="vertical-align:top;float:right"> <small class="target_time_${data.sender}">${data.time}</small> </td>
+                              <td style="vertical-align:top;float:right"> <small class="target_time_${data.sender}">${data.time}</small> <br> <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(${data.id_receiver}, this)"></td>
                             </tr>`;
           $('.table_chat tbody').append(new_message);
         }else {
@@ -469,6 +485,46 @@
     $(window).resize(function() {
       respo();
     })
+
+    function del_chat(id,th) {
+      $.ajax({
+        url: "/delete_chat",
+        type: 'POST',
+        cache: false,
+        dataType: 'JSON',
+        data: {
+          id_friend: id,
+        },
+        beforeSend: function() {
+          $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#1ab065;color:#ececec" role="alert">
+            <b style="text-transform:capitalize">
+            Prosessing deleted data...
+          </div>`);
+        },
+        success: function(result) {
+          if (result) {
+            $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#1ab065;color:#ececec" role="alert">
+              <b style="text-transform:capitalize">
+               Data has been deleted.
+            </div>`);
+            console.log($(th).parent().parent('tr').html());
+            $(th).parent().parent('tr').remove();
+            setTimeout(function () {
+              $('.notification_del_area').html('');
+            }, 3000);
+          } else {
+            $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#e84242;color:#ececec" role="alert">
+              <b style="text-transform:capitalize">
+               Something was wrong with connection, try again..
+            </div>`);
+            // $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
+          }
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+          console.error();
+        }
+      })
+    }
 
 
   </script>
