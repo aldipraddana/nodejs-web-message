@@ -75,7 +75,7 @@ app.get('/index/:id_receiver', (req, res) => {
 
         connection.query(
           `SELECT id_chat, user_id, message, time_chat FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' AND who = '${req.session.username}' ORDER BY id_chat ASC;
-          SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
+          SELECT img_profile, information FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
           (error_, return_two) => {
             if (error) throw error;
 
@@ -88,7 +88,8 @@ app.get('/index/:id_receiver', (req, res) => {
                 data_receiver: results[1][0],
                 group: results[0][0],
                 history_chat: return_two[0],
-                img_profile: return_two[1][0].img_profile
+                img_profile: return_two[1][0].img_profile,
+                information: return_two[1][0].information
               });
             }
 
@@ -163,17 +164,11 @@ app.post('/signin', (req, res) => {
     (error, results) => {
       if (results.length > 0) {
 
-        // try {
-        //   const data_ = fs.readFileSync(__dirname + '/test.txt'), 'utf8')
-        //   console.log(data_);
-        // } catch (err) {
-        //   console.error(err);
-        // }
-
         req.session.loggedin = true;
         req.session.username = results[0].username;
         req.session.name = results[0].name;
         req.session.id_user = results[0].id_user;
+        req.session.information = results[0].information;
 
 				req.flash('login', 1);
         res.redirect('/list');
@@ -299,8 +294,35 @@ app.post('/delete_chat', (req, res) => {
             }
         })
       })
+  }else {
+    res.redirect('/');
   }
 });
+
+app.post('/update_stat_info', function(req, res) {
+  if (req.session.loggedin) {
+    connection.query(
+      `UPDATE cn_user SET ${req.body.kind__} = '${req.body.val__}' WHERE id_user = ${req.session.id_user}`,
+      (error, results) => {
+        if (error) {
+          console.log(error);
+          return res.status(400).send('Service Unracable, try again later. Back');
+        }else {
+          if (results.affectedRows) {
+            if (req.body.kind__ == 'name') {
+              req.session.name = req.body.val__;
+            }else {
+              req.session.information = req.body.val__;
+            }
+            res.redirect('/list');
+          }
+        }
+      }
+    )
+  }else {
+    res.redeirect('/')
+  }
+})
 
 app.get('/logout', function(req, res) {
   req.session.destroy((err) => {

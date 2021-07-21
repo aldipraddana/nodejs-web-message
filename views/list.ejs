@@ -6,71 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Inponow Web Chat</title>
   <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/custom.css">
   <script src="/jsjq/jquery.min.js" charset="utf-8"></script>
   <script src="/js/bootstrap.min.js"></script>
   <script src="/js/bootstrap.js"></script>
   <script src="/socket.io/socket.io.js" charset="utf-8"></script>
-  <style media="screen">
-    @font-face {
-      font-family: 'sans-bold';
-      src: url('/font/OpenSans-Bold.ttf');
-    }
-
-    @font-face {
-      font-family: 'sans';
-      src: url('/font/OpenSans-Regular.ttf');
-    }
-
-    body{
-      font-family: 'sans';
-    }
-
-    .shadow {
-      /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important; */
-      box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px !important;
-      border-radius: 7.2px;
-    }
-
-    .bg-blue {
-      background: #00CF68 !important;
-      color: white;
-      width: 100% !important;
-      border-color: #00CF68;
-    }
-
-    a{
-      color:#011f32 !important;
-      font-weight: bold;
-    }
-
-    .bg-yellow {
-      color: #fff;
-      border-color: transparent;
-      background: #262626 !important;
-    }
-
-    .tr_contact:hover{
-      background:rgba(0, 207, 104, 0.11);
-    }
-
-    .btn-simple-cs{
-      border:1px solid #00CF68;width:100%;color:#20995d;
-    }
-
-    .input-info{
-      border:none;cursor: pointer;padding:0;
-    }
-
-    .trash-custom{
-      width:30px;float:right;cursor:pointer;opacity:0.3;
-    }
-
-    .trash-custom:hover{
-      width:30px;float:right;cursor:pointer;opacity:1;
-    }
-  </style>
 </head>
-
 <body>
   <div class="container">
     <br>
@@ -122,14 +63,16 @@
               <table class="table table-borderless table-o mt-3 table_chat" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
-                  <tr style="border-bottom:1px solid #cdcdcd;z-index:1" class="tr_contact">
+                  <tr style="border-bottom:1px solid #cdcdcd;z-index:1" class="tr_contact ea098<%= item.id_friend %>">
                     <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
                     <td onclick="click_to_chat('/index/<%= item.id_friend %>')" style="cursor: pointer;vertical-align:middle;"> <b><%= item.name %></b>
                       <br>
                       <small> <span class="sender_chat_<%= item.username %>"><%= item.user_id == user_login.id_user ? 'You' : item.name %></span> : <span class="target_<%= item.username  %>"><%= item.message  %></span> </small>
                     </td>
-                    <td style="vertical-align:top;float:right"> <small class="target_time_<%= item.username  %>"><%= item.time_chat %></small> <br> <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(<%= item.id_friend %>, this)"> </td>
-
+                    <td style="vertical-align:top;float:right;text-align:end">
+                      <small class="target_time_<%= item.username  %>"><%= item.time_chat %></small>
+                      <br>
+                      <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(<%= item.id_friend %>, '<%= item.name %>')"> </td>
                   </tr>
                   <% }) %>
                 </tbody>
@@ -143,10 +86,10 @@
               <br>
             </div>
             <div class="col-md-10">
-              <input type="text" class="form-control" oninput="searhContact(this)" style="width:100%" placeholder="Filter your friend name..." name="" value="">
+              <input type="text" class="form-control" oninput="searhContact(this)" style="width:100%;height:45px;" placeholder="Filter your friend name..." name="" value="">
             </div>
             <div class="col-md-2">
-              <button type="button" class="btn shadow nbr0012 btn-simple-cs" name="button_add_friend">➕ Find Friend</button>
+              <button type="button" class="btn shadow nbr0012 btn-simple-cs" style="height:45px;" name="button_add_friend">➕ Find Friend</button>
             </div>
             <div class="col-md-12">
               <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
@@ -198,7 +141,7 @@
                 </tr>
                 <tr>
                   <td class="pt-2"style="width:95%">
-                    <%= user_login.name %>
+                   <span class="name_987"><%= user_login.name %></span>
                   </td>
                   <td class="pt-2"> <span onclick="update_info('name')" style="cursor: pointer;border:none;background:transparent" name="button">✏️</span> </td>
                 </tr>
@@ -207,9 +150,9 @@
                 </tr>
                 <tr>
                   <td class="pt-2">
-                    Ex : I'm Actually Superman, But don't tell anyone.
+                    <span class="information_987"><%= user_login.information %></span>
                   </td>
-                  <td class="pt-2"><span onclick="update_info('info')" style="cursor: pointer;border:none;background:transparent" name="button">✏️</span></td>
+                  <td class="pt-2"><span onclick="update_info('information')" style="cursor: pointer;border:none;background:transparent" name="button">✏️</span></td>
                 </tr>
               </table>
             </div>
@@ -268,266 +211,49 @@
     </div>
   </div>
 
-  <script type="text/javascript">
+  <div class="modal fade" id="areyousure" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <!-- <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Edit photo profile</h5>
+        </div> -->
+        <div class="modal-body pt-5 pb-5">
+          <center>
+            <h4>Are you sure want to delete <b id="namefr"></b> chat?</h4>
+            <div class="mt-3">
+              <button type="button" class="btn btn-secondary" style="width:100px" data-dismiss="modal">Cencel</button>
+              <button type="button" class="btn btndelyes" style="width: 100px;background: #00CF68 !important;color: white;">Yes</button>
+            </div>
+          </center>
+        </div>
 
-  $('#FormControlFile1').on('change', function() {
-    let reader = new FileReader()
-    reader.onload = function(){
-      var output = $('#preview-profile')[0]
-      output.src = reader.result
-    };
-    reader.readAsDataURL(event.target.files[0])
-  })
+      </div>
+    </div>
+  </div>
 
-    function click_to_chat(n) {
-      console.log(n);
-      location.replace(n);
-    }
+  <div class="modal fade" id="edit_info_profile" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <form action="/update_stat_info" method="post">
+          <div class="modal-header">
+            <h5 class="modal-title" id="title_info_profile"></h5>
+          </div>
+          <div class="modal-body">
+              <div class="form-group">
+                <input type="hidden" name="kind__" value="">
+                <input type="text" class="form-control mt-3 eip" style="height:45px;" name="val__" value="">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn" style="background: #00CF68 !important;color: white;">Save changes</button>
+          </div>
+        </form>
+        </div>
+    </div>
+  </div>
 
-    function isStorageExist() {
-       if(typeof(Storage) === undefined){
-           console.log("Browser kamu tidak mendukung local storage");
-           return false
-       }
-       return true;
-    }
-
-    function ws(master) {
-      localStorage.setItem('INPONOW_WEB_CHAT', JSON.stringify(master))
-    }
-
-    function save_tab(n) {
-      let data = {
-        'tab_opened' : n
-      }
-      ws(data);
-      // console.log(JSON.parse(localStorage.getItem('INPONOW_WEB_CHAT')), 'ini web storage');
-    }
-
-    $(document).ready(function() {
-      setTimeout(function() {
-        $('.alert__').fadeOut();
-      }, 3000);
-
-      if (isStorageExist()) {
-        let tab = JSON.parse(localStorage.getItem('INPONOW_WEB_CHAT'))
-        if (tab != null) {
-          if (tab.tab_opened == 'contact-tab') {
-            $(`#home-tab`).removeClass('active').removeClass('.show');
-            $(`#home`).removeClass('active').removeClass('.show');
-            $(`#contact-tab`).addClass('active').addClass('show');
-            $(`#contact`).addClass('active').addClass('show');
-          }else if (tab.tab_opened == 'profile-tab') {
-            $(`#home-tab`).removeClass('active').removeClass('.show');
-            $(`#home`).removeClass('active').removeClass('.show');
-            $(`#profile-tab`).addClass('active').addClass('show');
-            $(`#profile`).addClass('active').addClass('show');
-          }
-        }
-      }
-    });
-
-    $('button[name="button_add_friend"]').on('click', function() {
-      $('.add__').show();
-      $('.list__').hide();
-    });
-
-    $('button[name="button_back"]').on('click', function() {
-      $('.add__').hide();
-      $('.list__').show();
-    });
-
-    $('.find__').on('click', () => {
-      let val = $('#username__').val();
-      if (val != '') {
-        $.ajax({
-          url: "/find",
-          type: 'POST',
-          cache: false,
-          // dataType: 'JSON',
-          data: {
-            username: val,
-          },
-          beforeSend: function() {
-            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Loading..</center>`);
-          },
-          success: function(result) {
-            if (result != 0) {
-              $('.find_area__').html(result);
-            } else {
-              $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
-            }
-          },
-          error: function(XMLHttpRequest, textStatus, errorThrown) {
-            console.error();
-          }
-        })
-      }else {
-        $('#liveToast').toast('show')
-      }
-    })
-
-    const add_friend = (id_) => {
-      let tampung_sementara = [];
-      $(`tr[row-id="${id_}"] td`).each((i,v) =>{
-        if (i !== 3) {
-          tampung_sementara.push($(v).text());
-        }
-      })
-
-      $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Sedang Menambahkan Teman..</center>`);
-
-      $.ajax({
-        url: "/cek_friend",
-        type: 'POST',
-        cache: false,
-        dataType: 'JSON',
-        data: {
-          id_friend: id_
-        },
-        success: function(result_) {
-          console.log(result_);
-          if (result_ == 1) {
-
-            $.ajax({
-              url: "/add_friend",
-              type: 'POST',
-              cache: false,
-              dataType: 'JSON',
-              data: {
-                id_friend: id_,
-                id_group_chat: `<%= user_login.username %>_${tampung_sementara[1]}`
-              },
-              success: function(result) {
-                if (result.success == 1) {
-                  let count_ = $('.friend_list tbody tr').length;
-                  $('.friend_list tbody').append(`<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${id_}')">
-                                                    <td style="width:65px"><img src="${result.img_profile_friend != '' ? result.img_profile_friend : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                                                    <td style="vertical-align:middle">${tampung_sementara[2]}</td>
-                                                  </tr>`);
-                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} berhasil ditambahkan</center>`);
-                  setTimeout(function () {
-                    $('.find_area__').html(``);
-                  }, 579);
-                }else {
-                  $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>Gagal menambahkan ${tampung_sementara[2]}, coba lagi nanti</center>`);
-                }
-              },
-              error: function(XMLHttpRequest, textStatus, errorThrown) {
-                console.error();
-              }
-            })
-
-
-          }else {
-            $('.find_area__').html(`<center class="mt-5"><h2>🏄</h2>${tampung_sementara[2]} telah menjadi teman anda.</center>`);
-          }
-
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          console.error();
-        }
-      })
-
-    }
-
-    $(function() {
-      let socket = io.connect()
-      socket.on(`notification_<%= user_login.id_user %>`, function(data) {
-        $('.notification_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:rgba(0, 207, 104, 0.11);color:#00b75c" role="alert">
-          New Message From <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>`);
-        // console.log($(`.target_${data.sender}`).text(), 'cek notif');
-        if ($(`.target_${data.sender}`).text() == '') {
-          let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/${data.id_receiver}')">
-                              <td style="width:65px"><img src="${data.img_profile != '' ? data.img_profile : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                              <td style="vertical-align:middle"><b>${data.name}</b>
-                                <br>
-                                <small>${data.name} : <span class="target_${data.sender}">${data.msg}</span> </small>
-                              </td>
-                              <td style="vertical-align:top;float:right"> <small class="target_time_${data.sender}">${data.time}</small> <br> <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(${data.id_receiver}, this)"></td>
-                            </tr>`;
-          $('.table_chat tbody').append(new_message);
-        }else {
-          $(`.target_${data.sender}`).text(data.msg);
-          $(`.target_time_${data.sender}`).text(data.time);
-          $(`.sender_chat_${data.sender}`).text(data.name);
-        }
-
-    })
-
-
-    })
-
-    function searhContact(th) {
-      var $rows = $('.friend_list tr');
-      $(th).keyup(function() {
-          var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-
-          $rows.show().filter(function() {
-              var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-              return !~text.indexOf(val);
-          }).hide();
-      });
-    }
-
-    function respo() {
-      if ($(window).width() > 768) {
-        $('.nbr0012').removeClass('mt-2');
-      } else {
-        $('.nbr0012').addClass('mt-2');
-      }
-    }
-    respo();
-    $(window).resize(function() {
-      respo();
-    })
-
-    function del_chat(id,th) {
-      $.ajax({
-        url: "/delete_chat",
-        type: 'POST',
-        cache: false,
-        dataType: 'JSON',
-        data: {
-          id_friend: id,
-        },
-        beforeSend: function() {
-          $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#1ab065;color:#ececec" role="alert">
-            <b style="text-transform:capitalize">
-            Prosessing deleted data...
-          </div>`);
-        },
-        success: function(result) {
-          if (result) {
-            $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#1ab065;color:#ececec" role="alert">
-              <b style="text-transform:capitalize">
-               Data has been deleted.
-            </div>`);
-            console.log($(th).parent().parent('tr').html());
-            $(th).parent().parent('tr').remove();
-            setTimeout(function () {
-              $('.notification_del_area').html('');
-            }, 3000);
-          } else {
-            $('.notification_del_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:#e84242;color:#ececec" role="alert">
-              <b style="text-transform:capitalize">
-               Something was wrong with connection, try again..
-            </div>`);
-            // $('.find_area__').html('<center class="mt-5"><h2>😢</h2>Username Not Found !</center>');
-          }
-        },
-        error: function(XMLHttpRequest, textStatus, errorThrown) {
-          console.error();
-        }
-      })
-    }
-
-
-  </script>
+  <script src="/js/custom_list.js" charset="utf-8"></script>
 </body>
 
 </html>

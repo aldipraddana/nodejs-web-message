@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'sans-bold';
+  src: url('/font/OpenSans-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'sans';
+  src: url('/font/OpenSans-Regular.ttf');
+}
+
+body{
+  font-family: 'sans';
+}
+
+.shadow {
+  /* box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 12px !important; */
+  box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 0px 1px inset, rgba(0, 0, 0, 0.1) 0px 0px 0px 1px !important;
+  border-radius: 7.2px;
+}
+
+.bg-blue {
+  background: #00CF68 !important;
+  color: white;
+  width: 100% !important;
+  border-color: #00CF68;
+}
+
+a{
+  color:#011f32 !important;
+  font-weight: bold;
+}
+
+.bg-yellow {
+  color: #fff;
+  border-color: transparent;
+  background: #262626 !important;
+}
+
+.tr_contact:hover{
+  background:rgba(0, 207, 104, 0.11);
+}
+
+.btn-simple-cs{
+  border:1px solid #00CF68;width:100%;color:#20995d;
+}
+
+.input-info{
+  border:none;cursor: pointer;padding:0;
+}
+
+.trash-custom{
+  width:30px;float:right;cursor:pointer;opacity:0.3;
+}
+
+.trash-custom:hover{
+  width:30px;float:right;cursor:pointer;opacity:1;
+}
+
+.send{
+  margin-top: 30px;
+}
+
+@media screen and (max-width: 768px) {
+  .send{
+    margin-top: 13px;
+  }
+}
