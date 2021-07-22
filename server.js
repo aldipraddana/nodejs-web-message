@@ -1,6 +1,7 @@
 let express = require('express');
 let session = require('express-session');
 let expressFileupload = require('express-fileupload');
+let sharp = require('sharp');
 let app = express();
 
 let server = require('http').createServer(app);
@@ -10,6 +11,7 @@ const mysql = require('mysql');
 const path = require('path');
 const jquery = require('jquery');
 const fs = require('fs');
+const htmlspecialchars = require('htmlspecialchars');
 
 // prepare server
 // app.use('/api', api); // redirect API calls
@@ -134,7 +136,7 @@ app.get('/list', (req, res) => {
 
 app.post('/check_username', (req, res) => {
   connection.query(
-    `SELECT username FROM cn_user WHERE username = '${req.body.username}'`,
+    `SELECT username FROM cn_user WHERE username = '${htmlspecialchars(req.body.username)}'`,
     (error, results) => {
       if (results.length > 0) {
         res.json(1);
@@ -149,7 +151,7 @@ app.post('/check_username', (req, res) => {
 app.post('/signup', (req, res) => {
   connection.query(
     'INSERT INTO cn_user (username, name, password) VALUES (?, ?, ?)',
-    [req.body.username, req.body.name, req.body.password],
+    [htmlspecialchars(req.body.username), htmlspecialchars(req.body.name), htmlspecialchars(req.body.password)],
     (error, results) => {
       req.flash('login', 'Successfully added account, please login...');
       res.redirect('/');
@@ -160,7 +162,7 @@ app.post('/signup', (req, res) => {
 app.post('/signin', (req, res) => {
   connection.query(
     'SELECT * FROM cn_user WHERE username = ? AND password = ?',
-    [req.body.username, req.body.password],
+    [htmlspecialchars(req.body.username), htmlspecialchars(req.body.password)],
     (error, results) => {
       if (results.length > 0) {
 
@@ -232,48 +234,52 @@ app.post('/add_friend', (req, res) => {
 app.post('/uploadpp', function(req, res) {
   let thefile = req.files.img;
   if (req.session.loggedin) {
-
-  }
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded. Back');
-  }else if (thefile.mimetype.split('/')[0] != 'image') {
-    return res.status(400).send('file must be image. Back');
-  }
-  let name_file = +new Date() + thefile.md5;
-  let path = __dirname + '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
-  let for_save = '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
-  thefile.mv(path, function(err) {
-    if (err){
-      return res.status(500).send(err);
-    }else {
-      connection.query(
-        `SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
-        (error, img_data) => {
-          if (img_data.length > 0) {
-            fs.unlink(__dirname+img_data[0].img_profile, (err) => {
-              if (err) {
-                console.error(err)
-              }
-            })
-          }
-
-          //UPDATE
-          connection.query(
-            `UPDATE cn_user SET img_profile = ? WHERE id_user = ?`,
-            [for_save, req.session.id_user],
-        		(error, results) => {
-              if (error) {
-                return res.status(400).send('Service Unracable, try again later. Back');
-              }else {
-                res.redirect('/list');
-              }
-        		}
-        	)
-
-        }
-      )
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded. Back');
+    }else if (thefile.mimetype.split('/')[0] != 'image') {
+      return res.status(400).send('file must be image. Back');
     }
-  });
+    let name_file = +new Date() + thefile.md5;
+    let path = __dirname + '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
+    let for_save = '/img/ak47/' + name_file + '.' + thefile.name.split('.')[1];
+
+    sharp(thefile.data)
+    .resize(400, 400)
+    .toFile(path, (err, info) => {
+      if (err == null) {
+        connection.query(
+          `SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
+          (error, img_data) => {
+            if (img_data.length > 0) {
+              fs.unlink(__dirname+img_data[0].img_profile, (err) => {
+                if (err) {
+                  console.error(err)
+                }
+              })
+            }
+            //UPDATE
+            connection.query(
+              `UPDATE cn_user SET img_profile = ? WHERE id_user = ?`,
+              [for_save, req.session.id_user],
+              (error, results) => {
+                if (error) {
+                  return res.status(400).send('Service Unracable, try again later. Back');
+                }else {
+                  res.redirect('/list');
+                }
+              }
+            )
+
+          }
+        )
+      }else {
+        return res.status(500).send(err);
+      }
+    });
+
+  }else {
+    res.redirect('/')
+  }
 });
 
 app.post('/delete_chat', (req, res) => {
@@ -302,7 +308,7 @@ app.post('/delete_chat', (req, res) => {
 app.post('/update_stat_info', function(req, res) {
   if (req.session.loggedin) {
     connection.query(
-      `UPDATE cn_user SET ${req.body.kind__} = '${req.body.val__}' WHERE id_user = ${req.session.id_user}`,
+      `UPDATE cn_user SET ${req.body.kind__} = '${htmlspecialchars(req.body.val__)}' WHERE id_user = ${req.session.id_user}`,
       (error, results) => {
         if (error) {
           console.log(error);
@@ -356,8 +362,8 @@ io.sockets.on('connection', function(socket) {
     let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
     connection.query(
     `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who) VALUES
-    ('${data.message}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
-    ('${data.message}', '${data.group}', ${data.id_me}, '${time}', '${explode[1]}')`,
+    ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
+    ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[1]}')`,
       (error, results) => {
         console.log(error);
         console.log(results);
