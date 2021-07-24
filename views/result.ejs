@@ -14,7 +14,7 @@
         <td style="text-align:center;vertical-align:middle" hidden><%= Number(i)+1 %></td>
         <td style="vertical-align:middle;display:none;"><%= item.username %></td>
         <td style="vertical-align:middle"><%= item.name %></td>
-        <td style="vertical-align:middle;text-align:center"> <button class="btn shadow btn-simple-cs" onclick="add_friend('<%= item.id_user %>')">➕</button> </td>
+        <td style="vertical-align:middle;text-align:center"> <button class="btn shadow btn-simple-cs" onclick="add_friend('<%= item.id_user %>', '<%= user_login.username %>')">➕</button> </td>
       </tr>
       <% }) %>
     </tbody>

@@ -60,6 +60,12 @@
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
           <div class="row">
             <div class="col-md-12">
+              <% if(chat_list == ''){ %>
+                <div class="empty_12">
+                  <br>
+                  <center><b>Empty chat data. Let's find friends and start communicating.</b></center>
+                </div>
+              <% } %>
               <table class="table table-borderless table-o mt-3 table_chat" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% chat_list.forEach((item, i) => { %>
@@ -95,9 +101,10 @@
               <table class="table table-borderless table-o mt-3 friend_list" style="width: 100%;border-radius:5px;">
                 <tbody>
                   <% items.forEach((item, i) => { %>
-                  <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact" onclick="click_to_chat('/index/<%= item.id_user %>')">
+                  <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact ea097<%=item.id_user%>" >
                     <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                    <td style="vertical-align:middle"><%= item.name %></td>
+                    <td style="vertical-align:middle;width:70%" onclick="click_to_chat('/index/<%= item.id_user %>')"><%= item.name %></td>
+                    <td><img src="/font/delete.png" class="trash-custom mt-2" style="z-index:2" onclick="del_contact(<%= item.id_user %>, '<%= item.name %>')"> </td>
                   </tr>
                   <% }) %>
                 </tbody>
@@ -113,10 +120,10 @@
                     <button type="button" class="float-right" style="background:transparent;border:0;color:#00CF68;font-family:'sans-bold';" name="button_back">🏄🏽 Back</button>
                   </div>
                   <div class="col-md-10 mt-3">
-                    <input type="text" id="username__" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
+                    <input type="text" id="username__" style="height:45px;" class="form-control" autocomplete="off" placeholder="Search By Username..." value="">
                   </div>
                   <div class="col-md-2">
-                    <button type="button" class="btn shadow mt-3 find__ btn-simple-cs" style="" name="button">🔍 Find</button>
+                    <button type="button" class="btn shadow mt-3 find__ btn-simple-cs" style="height:45px;" name="button">🔍 Find</button>
                   </div>
                   <div class="col-md-12 find_area__">
 
@@ -214,12 +221,9 @@
   <div class="modal fade" id="areyousure" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
-        <!-- <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Edit photo profile</h5>
-        </div> -->
         <div class="modal-body pt-5 pb-5">
           <center>
-            <h4>Are you sure want to delete <b id="namefr"></b> chat?</h4>
+            <h4>Are you sure want to delete <span id="namefr"></span></h4>
             <div class="mt-3">
               <button type="button" class="btn btn-secondary" style="width:100px" data-dismiss="modal">Cencel</button>
               <button type="button" class="btn btndelyes" style="width: 100px;background: #00CF68 !important;color: white;">Yes</button>
@@ -252,7 +256,37 @@
         </div>
     </div>
   </div>
+  <script type="text/javascript">
+  $(function() {
+    let socket = io.connect()
+    socket.on(`notification_<%= user_login.id_user %>`, function(data) {
+      $('.notification_area').html(`<div class="alert shadow alert-dismissible fade show" style="background:rgba(0, 207, 104, 0.11);color:#00b75c" role="alert">
+        New Message From <b style="text-transform:capitalize">${data.sender}</b> ~ "${data.msg}"
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>`);
+      // console.log($(`.target_${data.sender}`).text(), 'cek notif');
+      $('.empty_12').hide();
+      if ($(`.target_${data.sender}`).text() == '') {
+        let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact ea098${data.id_receiver}" onclick="click_to_chat('/index/${data.id_receiver}')">
+                            <td style="width:65px"><img src="${data.img_profile != '' ? data.img_profile : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
+                            <td style="vertical-align:middle"><b>${data.name}</b>
+                              <br>
+                              <small>${data.name} : <span class="target_${data.sender}">${data.msg}</span> </small>
+                            </td>
+                            <td style="vertical-align:top;float:right;text-align:end"> <small class="target_time_${data.sender}">${data.time}</small> <br> <img src="/font/delete.png" class="trash-custom" style="z-index:2" onclick="del_chat(${data.id_receiver}, this)"></td>
+                          </tr>`;
+        $('.table_chat tbody').append(new_message);
+      }else {
+        $(`.target_${data.sender}`).text(data.msg);
+        $(`.target_time_${data.sender}`).text(data.time);
+        $(`.sender_chat_${data.sender}`).text(data.name);
+      }
 
+    })
+  })
+  </script>
   <script src="/js/custom_list.js" charset="utf-8"></script>
 </body>
 

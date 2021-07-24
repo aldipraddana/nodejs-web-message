@@ -109,6 +109,7 @@ app.get('/list', (req, res) => {
       `SELECT cu.*
       FROM cn_friend cf, cn_user cu
       WHERE cf.id_user = ${req.session.id_user}
+      AND cf.who = '${req.session.username}'
       AND cf.id_friend = cu.id_user;
       SELECT cc.*, cu.name, cu.id_user id_friend, cu.username, cu.img_profile
       FROM cn_chat cc, cn_user cu
@@ -218,10 +219,12 @@ app.post('/cek_friend', (req, res) => {
 
 app.post('/add_friend', (req, res) => {
   if (req.session.loggedin) {
+  gt = req.body.id_group_chat.split('_');
 	connection.query(
-    `INSERT INTO cn_friend (id_user, id_friend, id_group_chat) VALUES (?, ?, ?);
+    `INSERT INTO cn_friend (id_user, id_friend, id_group_chat, who) VALUES (?, ?, ?, ?), (?, ?, ?, ?);
      SELECT img_profile FROM cn_user WHERE id_user = ${req.body.id_friend}`,
-    [req.session.id_user, req.body.id_friend, req.body.id_group_chat],
+    [req.session.id_user, req.body.id_friend, req.body.id_group_chat, `${gt[0]}`,
+    req.session.id_user, req.body.id_friend, req.body.id_group_chat, `${gt[1]}`],
 		(error, results) => {
       if (results[0].affectedRows) {
         res.json({success:1,img_profile_friend:`${results[1][0].img_profile}`});
@@ -294,6 +297,30 @@ app.post('/delete_chat', (req, res) => {
           `DELETE FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}'`,
           (error, results) => {
             if (results.affectedRows) {
+              res.json(1);
+            }else {
+              res.json(0);
+            }
+        })
+      })
+  }else {
+    res.redirect('/');
+  }
+});
+
+app.post('/delete_contact', (req, res) => {
+  if (req.session.loggedin) {
+    connection.query(
+      `SELECT cf.id_group_chat FROM cn_user cu
+       JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
+       WHERE cu.id_user = ${req.session.id_user}
+       AND (cf.id_user = ${req.body.id_friend} or cf.id_friend = ${req.body.id_friend});`,
+      (error, result_1) => {
+        connection.query(
+          `DELETE FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}';
+           DELETE FROM cn_friend WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}'`,
+          (error, results) => {
+            if (results[1].affectedRows) {
               res.json(1);
             }else {
               res.json(0);
