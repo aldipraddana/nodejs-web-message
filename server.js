@@ -12,6 +12,7 @@ const path = require('path');
 const jquery = require('jquery');
 const fs = require('fs');
 const htmlspecialchars = require('htmlspecialchars');
+const htmlspecialchars_decode = require('htmlspecialchars_decode');
 
 // prepare server
 // app.use('/api', api); // redirect API calls
@@ -52,6 +53,19 @@ app.set('view engine', 'ejs');
 server.listen(3000);
 console.log('Server sedang Berjalan...')
 
+function now__() {
+  function pad(val) {
+    var str = "" + val;
+    var pad = "00";
+    var ans = pad.substring(0, pad.length - str.length) + str;
+    return ans;
+  }
+
+  let dt = new Date();
+  let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
+  return time
+}
+
 app.get('/', function(req, res) {
 	let flash_data = req.flash('login');
 	let flash_ = '';
@@ -76,7 +90,7 @@ app.get('/index/:id_receiver', (req, res) => {
         if (error) throw error;
 
         connection.query(
-          `SELECT id_chat, user_id, message, time_chat FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' AND who = '${req.session.username}' ORDER BY id_chat ASC;
+          `SELECT id_chat, user_id, message, time_chat, img FROM cn_chat WHERE id_group_chat = '${results[0][0].id_group_chat}' AND who = '${req.session.username}' ORDER BY id_chat ASC;
           SELECT img_profile, information FROM cn_user WHERE id_user = ${req.params.id_receiver}`,
           (error_, return_two) => {
             if (error) throw error;
@@ -85,13 +99,16 @@ app.get('/index/:id_receiver', (req, res) => {
               res.redirect('/list');
             } else {
               // console.log(history_chat);
+              return_two[0].forEach((item, i) => {
+                return_two[0][i]['message'] = htmlspecialchars_decode(item.message)
+              })
               res.render('index', {
                 user_login: req.session,
                 data_receiver: results[1][0],
                 group: results[0][0],
                 history_chat: return_two[0],
                 img_profile: return_two[1][0].img_profile,
-                information: return_two[1][0].information
+                information: htmlspecialchars_decode(return_two[1][0].information)
               });
             }
 
@@ -120,6 +137,9 @@ app.get('/list', (req, res) => {
       AND cu.username = SUBSTRING_INDEX(cc.id_group_chat, "_", (CASE WHEN SUBSTRING_INDEX(cc.id_group_chat, "_", -1) = '${req.session.username}' THEN 1 ELSE -1 END));
       SELECT img_profile FROM cn_user WHERE id_user = ${req.session.id_user}`,
       (error, results) => {
+        results[1].forEach((item, i) => {
+          results[1][i]['message'] = htmlspecialchars_decode(item.message)
+        })
         res.render('list', {
           items: results[0],
           chat_list: results[1],
@@ -171,7 +191,7 @@ app.post('/signin', (req, res) => {
         req.session.username = results[0].username;
         req.session.name = results[0].name;
         req.session.id_user = results[0].id_user;
-        req.session.information = results[0].information;
+        req.session.information = htmlspecialchars_decode(results[0].information);
 
 				req.flash('login', 1);
         res.redirect('/list');
@@ -285,22 +305,92 @@ app.post('/uploadpp', function(req, res) {
   }
 });
 
+app.post('/sendimg', function(req, res) {
+  if (req.session.loggedin) {
+    let thefile = req.files.img;
+    let explode = req.body.group_chat.split('_');
+    let time = now__();
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).send('No files were uploaded. Back');
+    }else if (thefile.mimetype.split('/')[0] != 'image') {
+      return res.status(400).send('file must be image. Back');
+    }
+    let name_file = +new Date() + thefile.md5;
+    let path = __dirname + '/img/ss2v5/' + name_file + '.' + thefile.name.split('.')[1];
+    let for_save = '/img/ss2v5/' + name_file + '.' + thefile.name.split('.')[1];
+
+    sharp(thefile.data)
+    .resize(400, 400)
+    .toFile(path, (err, info) => {
+      if (err == null) {
+        connection.query(
+          `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who, img) VALUES
+          ('${req.session.name} send an image!', '${req.body.group_chat}', ${req.body.id_user}, '${time}', '${explode[0]}', '${for_save}'),
+          ('${req.session.name} send an image!', '${req.body.group_chat}', ${req.body.id_user}, '${time}', '${explode[1]}', '${for_save}')`,
+          (error, results) => {
+            console.log(results);
+            if (results.affectedRows) {
+              io.sockets.emit(`new_message_${req.body.group_chat}`, {
+                msg: `${req.session.name} send an image !`,
+                sender: req.body.username,
+                time: time,
+                img: `${for_save}`
+              });
+              io.sockets.emit(`notification_${req.body.receiver}`, {
+                msg: htmlspecialchars_decode(req.body.message),
+                sender: req.body.username,
+                receiver: req.body.receiver,
+                time: time,
+                id_receiver: req.body.id_user,
+                name:req.body.name,
+                img_profile: req.body.img_profile
+              });
+              res.redirect('/index/'+req.body.id_receiver);
+            }else {
+              return res.status(400).send('Service Unracable, try again later. Back');
+            }
+          }
+        )
+      }else {
+        return res.status(500).send(err);
+      }
+    });
+
+  }else {
+    res.redirect('/')
+  }
+});
+
 app.post('/delete_chat', (req, res) => {
   if (req.session.loggedin) {
-    connection.query(
+    connection.query( // get id group
       `SELECT cf.id_group_chat FROM cn_user cu
        JOIN cn_friend cf on cf.id_user = cu.id_user or cf.id_friend = cu.id_user
        WHERE cu.id_user = ${req.session.id_user}
-       AND (cf.id_user = ${req.body.id_friend} or cf.id_friend = ${req.body.id_friend});`,
+       AND (cf.id_user = ${req.body.id_friend} or cf.id_friend = ${req.body.id_friend})`,
       (error, result_1) => {
-        connection.query(
-          `DELETE FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}'`,
-          (error, results) => {
-            if (results.affectedRows) {
+        connection.query( //cek if last item to delete
+          `SELECT DISTINCT who FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}';
+           SELECT DISTINCT img FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' and img != ''`,
+          (error, results_2) => {
+          if (results_2[0].length == 1 && results_2[1].length != 0) {
+            results_2[1].forEach((val, i)=>{
+              fs.unlink(__dirname+val.img, (err) => {
+                if (err) {
+                  console.error(err)
+                }
+              })
+            })
+          }
+          connection.query( // delete the chat on database
+            `DELETE FROM cn_chat WHERE id_group_chat = '${result_1[0].id_group_chat}' AND who = '${req.session.username}'`,
+            (error, results_3) => {
+            if (results_3.affectedRows) {
               res.json(1);
             }else {
-              res.json(0);
+              res.json(0)
             }
+          })
         })
       })
   }else {
@@ -378,15 +468,7 @@ io.sockets.on('connection', function(socket) {
   // send message
   socket.on('send_message', function(data) {
     let explode = data.group.split('_');
-    function pad(val) {
-      var str = "" + val;
-      var pad = "00";
-      var ans = pad.substring(0, pad.length - str.length) + str;
-      return ans;
-    }
-
-    let dt = new Date();
-    let time = pad(dt.getHours()) + ":" + pad(dt.getMinutes()) + " " + dt.getDate() + "/" + pad(dt.getMonth()+1) + "/" + dt.getFullYear();
+    let time = now__();
     connection.query(
     `INSERT INTO cn_chat (message, id_group_chat, user_id, time_chat, who) VALUES
     ('${htmlspecialchars(data.message)}', '${data.group}', ${data.id_me}, '${time}', '${explode[0]}'),
@@ -398,13 +480,14 @@ io.sockets.on('connection', function(socket) {
           if (results.affectedRows) {
 
             io.sockets.emit(`new_message_${data.group}`, {
-              msg: data.message,
+              msg: htmlspecialchars_decode(data.message),
               sender: data.username,
-              time: time
+              time: time,
+              img: ''
             });
 
             io.sockets.emit(`notification_${data.receiver}`, {
-              msg: data.message,
+              msg: htmlspecialchars_decode(data.message),
               sender: data.username,
               receiver: data.receiver,
               time: time,

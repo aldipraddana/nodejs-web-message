@@ -44,9 +44,21 @@
             <% if (v.user_id ==  user_login.id_user) { %>
               <p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ <%= v.time_chat %></small></p>
               <div class="p-3 text-right" style="background: rgba(0, 207, 104, 0.11);border-radius:7px;"><%= v.message %></div>
+              <% if (v.img != '') { %>
+                <p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ <%= v.time_chat %></small></p>
+                <div class="text-right">
+                  <img src="<%= v.img %>" alt="" class="p-3" style="background: rgba(0, 207, 104, 0.11);border-radius:7px;width:255px;">
+                </div>
+              <% } %>
             <% } else { %>
               <p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ <%= v.time_chat %></small></p>
               <div class="p-3 text-left" style="background:#808f99;border-radius:7px;color:#fff"><%= v.message %></div>
+              <% if (v.img != '') { %>
+                <p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ <%= v.time_chat %></small></p>
+                <div class="text-left" >
+                  <img src="<%= v.img %>" alt="" class="p-3" style="background: #808f99;border-radius:7px;width:255px;">
+                </div>
+              <% } %>
             <% } %>
 
           <% }) %>
@@ -56,10 +68,11 @@
           <div class="form-group row">
             <div class="col-md-9">
               <label>Enter Message</label>
-              <input type="text" class="form-control" id="message" name="" value="" style="height:45px;" autocomplete="off">
+              <input type="text" required class="form-control" id="message" name="" value="" style="height:45px;" autocomplete="off">
             </div>
-            <div class="col-md-3">
-              <button type="submit" style="width:100%;height:45px;" name="button" class="btn bg-blue send">📨 Send Message</button>
+            <div class="col-md-3" style="display:inline;">
+              <button type="submit" style="width: 48%;height:45px;background:#40d58d;color:white" name="button" class="btn send">📨 Send</button>
+              <button type="button" style="width: 48%;height:45px;background:#40d58d;color:white;margin-left:5px" name="button" class="btn send" data-toggle="modal" data-target="#send_image"> Image</button>
             </div>
           </div>
         </form>
@@ -74,6 +87,34 @@
         </div>
       </div>
     </footer>
+  </div>
+
+  <div class="modal fade" id="send_image" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form action="/sendimg" method="post" enctype="multipart/form-data">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Choose File</h5>
+        </div>
+        <div class="modal-body">
+            <div class="form-group">
+              <input type="hidden" name="username" value="<%= user_login.username %>">
+              <input type="hidden" name="name" value="<%= user_login.name %>">
+              <input type="hidden" name="id_user" value="<%= user_login.id_user %>">
+              <input type="hidden" name="id_receiver" value="<%= data_receiver.id_user %>">
+              <input type="hidden" name="group_chat" value="<%= group.id_group_chat %>">
+              <input type="hidden" name="img_profile" value="<%= img_profile %>">
+              <input name="img" type="file" class="form-control-file" id="FormControlFile1" required accept="image/*">
+              <img src="" id="preview-profile" class="mt-2" alt="" style="width:100%">
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn" style="background: #00CF68 !important;color: white;">Send Image</button>
+        </div>
+        </form>
+      </div>
+    </div>
   </div>
   <script type="text/javascript">
 
@@ -110,11 +151,23 @@
         }else if (data.sender == '<%= user_login.username %>') {
           chat.append(`<p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ ${data.time}</small></p>
                       <div class="p-3 text-right" style="background: rgba(0, 207, 104, 0.11);border-radius:7px;">${data.msg} </div>`)
+          if (data.img != '') {
+            chat.append(`<p class="text-right mt-2" style="margin:0;padding:5px 0 5px"><small>You ~ ${data.time}</small></p>
+                        <div class="text-right" style="">
+                          <img src="${data.img}" alt="" class="p-3" style="width:255px;background: rgba(0, 207, 104, 0.11);border-radius:7px;">
+                        </div>`)
+          }
           $("html, body").animate({ scrollTop: $(document).height() }, 1000);
         } else {
           chat.append(`<p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${data.time}</small></p>
                       <div class="p-3 text-left"  style="background: #808f99;border-radius:7px;color:#fff">${data.msg}</div>`)
           $("html, body").animate({ scrollTop: $(document).height() }, 1000);
+          if (data.img != '') {
+            chat.append(`<p class="text-left mt-2" style="margin:0;padding:5px 0 5px"><small><%= data_receiver.name %> ~ ${data.time}</small></p>
+                        <div class="text-left" style="">
+                          <img src="${data.img}" class="p-3" alt="" style="background: #808f99;border-radius:7px;width:255px;">
+                        </div>`)
+          }
         }
 
         // console.log('ini di client');
@@ -131,11 +184,21 @@
         $('.nbr0012').addClass('mt-2');
       }
     }
+
     respo();
     $(window).resize(function() {
       respo();
     })
-    // aldi ajibb
+
+    $('#FormControlFile1').on('change', function() {
+      let reader = new FileReader()
+      reader.onload = function(){
+        var output = $('#preview-profile')[0]
+        output.src = reader.result
+      };
+      reader.readAsDataURL(event.target.files[0])
+    })
+
   </script>
 </body>
 

@@ -103,7 +103,7 @@
                   <% items.forEach((item, i) => { %>
                   <tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact ea097<%=item.id_user%>" >
                     <td style="width:65px"><img src="<%=item.img_profile != '' ? item.img_profile : '/img/default.png' %>" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                    <td style="vertical-align:middle;width:70%" onclick="click_to_chat('/index/<%= item.id_user %>')"><%= item.name %></td>
+                    <td style="vertical-align:middle;width:70%;cursor:pointer" onclick="click_to_chat('/index/<%= item.id_user %>')"><%= item.name %></td>
                     <td><img src="/font/delete.png" class="trash-custom mt-2" style="z-index:2" onclick="del_contact(<%= item.id_user %>, '<%= item.name %>')"> </td>
                   </tr>
                   <% }) %>
@@ -225,7 +225,7 @@
           <center>
             <h4>Are you sure want to delete <span id="namefr"></span></h4>
             <div class="mt-3">
-              <button type="button" class="btn btn-secondary" style="width:100px" data-dismiss="modal">Cencel</button>
+              <button type="button" class="btn btn-secondary" style="width:100px" data-dismiss="modal">Cancel</button>
               <button type="button" class="btn btndelyes" style="width: 100px;background: #00CF68 !important;color: white;">Yes</button>
             </div>
           </center>
@@ -269,9 +269,9 @@
       // console.log($(`.target_${data.sender}`).text(), 'cek notif');
       $('.empty_12').hide();
       if ($(`.target_${data.sender}`).text() == '') {
-        let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact ea098${data.id_receiver}" onclick="click_to_chat('/index/${data.id_receiver}')">
+        let new_message = `<tr style="border-bottom:1px solid #cdcdcd;" class="tr_contact ea098${data.id_receiver}" >
                             <td style="width:65px"><img src="${data.img_profile != '' ? data.img_profile : '/img/default.png'}" style="width:55px;height:55px;border-radius:50%" alt=""> </td>
-                            <td style="vertical-align:middle"><b>${data.name}</b>
+                            <td onclick="click_to_chat('/index/${data.id_receiver}')" style="cursor: pointer;vertical-align:middle"><b>${data.name}</b>
                               <br>
                               <small>${data.name} : <span class="target_${data.sender}">${data.msg}</span> </small>
                             </td>
