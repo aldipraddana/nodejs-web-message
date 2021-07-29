@@ -192,6 +192,7 @@ app.post('/signin', (req, res) => {
         req.session.name = results[0].name;
         req.session.id_user = results[0].id_user;
         req.session.information = htmlspecialchars_decode(results[0].information);
+        req.session.img_profile = results[0].img_profile;
 
 				req.flash('login', 1);
         res.redirect('/list');
@@ -223,7 +224,7 @@ app.post('/find', (req, res) => {
 
 app.post('/cek_friend', (req, res) => {
 	connection.query(
-		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} AND id_user = ${req.session.id_user}`,
+		`SELECT * FROM cn_friend WHERE id_friend = ${req.body.id_friend} AND id_user = ${req.session.id_user} and who = '${req.session.username}'`,
 		(error, results) => {
       // console.log(results);
       let hasil;
@@ -288,6 +289,7 @@ app.post('/uploadpp', function(req, res) {
                 if (error) {
                   return res.status(400).send('Service Unracable, try again later. Back');
                 }else {
+                  req.session.img_profile = for_save
                   res.redirect('/list');
                 }
               }
