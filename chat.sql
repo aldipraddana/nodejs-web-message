@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 28 Mar 2021 pada 16.08
+-- Waktu pembuatan: 29 Jul 2021 pada 17.02
 -- Versi server: 10.4.16-MariaDB
 -- Versi PHP: 7.4.12
 
@@ -32,27 +32,25 @@ CREATE TABLE `cn_chat` (
   `message` text NOT NULL,
   `user_id` int(11) NOT NULL,
   `id_group_chat` varchar(100) NOT NULL,
-  `time_chat` varchar(100) NOT NULL
+  `time_chat` varchar(100) NOT NULL,
+  `who` varchar(200) NOT NULL,
+  `img` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `cn_chat`
 --
 
-INSERT INTO `cn_chat` (`id_chat`, `message`, `user_id`, `id_group_chat`, `time_chat`) VALUES
-(31, 'Cek aldi', 9, 'ali_aldi', '08:10 24/03/2021'),
-(32, 'yoo', 1, 'ali_aldi', '08:10 24/03/2021'),
-(33, 'Nek POD nya yg ascp week jg jadi dah bener datanya, cuma ini dia minta kumulatif, jd nek skrg m2, haruse yg tmpil m1+m2, nek skrg m3, yg tampil haruse m1+m2+m3. Nah ini lg ta cb ubah dr query nya aja dlu.', 9, 'ali_aldi', '08:10 24/03/2021'),
-(34, 'ok', 1, 'ali_aldi', '08:11 24/03/2021'),
-(35, 'if you upload the next sketch to your ESP8266 board, it should automatically assign the fixed IP address 192.168.1.184', 9, 'ali_aldi', '08:12 24/03/2021'),
-(36, 'Anggaran Bantuan Usaha Mikro Tembus Rp15,36 T pada 2021', 1, 'ali_aldi', '08:13 24/03/2021'),
-(37, 'Try to be better tech', 9, 'ali_aldi', '08:14 24/03/2021'),
-(38, 'Keep your passion', 9, 'ali_aldi', '08:14 24/03/2021'),
-(39, 'Andi..', 9, 'ali_andi', '08:16 24/03/2021'),
-(40, 'Mbd 1 cek', 9, 'ali_aldi', '06:26 25/03/2021'),
-(41, 'cek', 1, 'ali_aldi', '06:26 25/03/2021'),
-(42, '', 1, 'andi_aldi', '20:16 28/03/2021'),
-(43, 'cek', 9, 'ali_aldi', '21:07 28/03/2021');
+INSERT INTO `cn_chat` (`id_chat`, `message`, `user_id`, `id_group_chat`, `time_chat`, `who`, `img`) VALUES
+(62, 'zakrsdsffs', 2, 'erwin_zake', '19:58 26/07/2021', 'zake', ''),
+(85, 'erwin', 4, 'erwin_eren', '20:13 26/07/2021', 'erwin', ''),
+(87, 'Yoo', 2, 'erwin_eren', '20:13 26/07/2021', 'erwin', ''),
+(89, 'Eren Yeager send an image!', 4, 'erwin_eren', '20:14 26/07/2021', 'erwin', '/img/ss2v5/16273052480537e3382d49d71100d2f1796db404dd00f.jpg'),
+(91, 'Okok', 2, 'erwin_eren', '20:14 26/07/2021', 'erwin', ''),
+(93, 'Eren....', 2, 'erwin_eren', '20:15 26/07/2021', 'erwin', ''),
+(94, 'Eren....', 2, 'erwin_eren', '20:15 26/07/2021', 'eren', ''),
+(95, 'hhhh', 4, 'erwin_eren', '20:15 26/07/2021', 'erwin', ''),
+(96, 'hhhh', 4, 'erwin_eren', '20:15 26/07/2021', 'eren', '');
 
 -- --------------------------------------------------------
 
@@ -64,24 +62,22 @@ CREATE TABLE `cn_friend` (
   `id` int(11) NOT NULL,
   `id_friend` int(11) NOT NULL,
   `id_group_chat` varchar(200) NOT NULL,
-  `id_user` int(11) NOT NULL
+  `id_user` int(11) NOT NULL,
+  `who` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `cn_friend`
 --
 
-INSERT INTO `cn_friend` (`id`, `id_friend`, `id_group_chat`, `id_user`) VALUES
-(3, 1, 'andi_aldi', 2),
-(4, 1, 'alex_aldi', 3),
-(6, 2, 'alex_andi', 3),
-(7, 1, 'ali_aldi', 9),
-(14, 3, 'aldi_alex', 1),
-(15, 9, 'aldi_ali', 1),
-(16, 1, 'enjel_aldi', 22),
-(17, 22, 'aldi_enjel', 1),
-(31, 2, 'aldi_andi', 1),
-(32, 21, 'ali_kirana', 9);
+INSERT INTO `cn_friend` (`id`, `id_friend`, `id_group_chat`, `id_user`, `who`) VALUES
+(3, 4, 'erwin_eren', 2, 'erwin'),
+(4, 4, 'erwin_eren', 2, 'eren'),
+(5, 3, 'erwin_zake', 2, 'erwin'),
+(6, 3, 'erwin_zake', 2, 'zake'),
+(9, 2, 'eren_erwin', 4, 'eren'),
+(11, 4, 'zake_eren', 3, 'zake'),
+(12, 4, 'zake_eren', 3, 'eren');
 
 -- --------------------------------------------------------
 
@@ -95,20 +91,18 @@ CREATE TABLE `cn_user` (
   `username` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   `img_profile` varchar(100) NOT NULL,
-  `last_online` varchar(50) NOT NULL
+  `last_online` varchar(50) NOT NULL,
+  `information` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data untuk tabel `cn_user`
 --
 
-INSERT INTO `cn_user` (`id_user`, `name`, `username`, `password`, `img_profile`, `last_online`) VALUES
-(1, 'Aldi Pradana', 'aldi', '123456', '', ''),
-(2, 'Andi Salahuddin Ahmad', 'andi', '12345', '', ''),
-(3, 'Alexander GG', 'alex', '123456', '', ''),
-(9, 'aliyosa', 'ali', '12345', '', ''),
-(21, 'kiranaaja', 'kirana', '123456', '', ''),
-(22, 'enjel Lina Novita Sari', 'enjel', 'enjel', '', '');
+INSERT INTO `cn_user` (`id_user`, `name`, `username`, `password`, `img_profile`, `last_online`, `information`) VALUES
+(2, 'Erwin Smith', 'erwin', '123456', '/img/ak47/16273052863325010ebfa3d98235ef8afdbb02525d11a.png', '', ''),
+(3, 'Zake Yeager', 'zake', '123456', '/img/ak47/162730407523248ee40b774037e8e3f7342fddc07c07f.jpg', '', ''),
+(4, 'Eren Yeager', 'eren', '12345678', '/img/ak47/162721814472024b7778d9deb54556550ac2902c28a7f.jpg', '', 'i&#039;m not titan again');
 
 --
 -- Indexes for dumped tables
@@ -140,19 +134,19 @@ ALTER TABLE `cn_user`
 -- AUTO_INCREMENT untuk tabel `cn_chat`
 --
 ALTER TABLE `cn_chat`
-  MODIFY `id_chat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id_chat` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
 
 --
 -- AUTO_INCREMENT untuk tabel `cn_friend`
 --
 ALTER TABLE `cn_friend`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT untuk tabel `cn_user`
 --
 ALTER TABLE `cn_user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
